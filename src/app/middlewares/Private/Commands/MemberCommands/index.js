@@ -1,7 +1,6 @@
 import Composer from 'telegraf/composer';
 
 import StartCommand from './StartCommand';
-import HelpCommand from './HelpCommand';
 import MyDataCommand from './MyDataCommand';
 import GroupLinkCommand from './GroupLinkCommand';
 import RegisterCommand from './RegisterCommand';
@@ -13,7 +12,6 @@ export default class MemberCommands extends Composer {
   constructor(database, subject) {
     super();
     this.use(new StartCommand(database, subject));
-    this.use(new HelpCommand(database, subject));
     this.use(new MyDataCommand(database, subject));
     this.use(new GroupLinkCommand(database, subject));
     this.use(new RegisterCommand(database, subject));

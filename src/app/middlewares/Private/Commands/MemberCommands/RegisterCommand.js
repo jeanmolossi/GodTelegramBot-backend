@@ -14,7 +14,6 @@ export default class RegisterCommand extends Composer {
     };
 
     this.command('register', this.commandAction.bind(this));
-    this.action('registerStart', this.registerStart.bind(this));
     this.hears(/^\/email \w/, this.registerStart.bind(this));
   }
 
@@ -40,7 +39,7 @@ export default class RegisterCommand extends Composer {
     );
     await context.reply(
       `Para encontrar o código do produto acesse o botão acima e busque pelo seu ` +
-        `produto comprado.\n Em seguida acesse "Ver detalhes"\nE na descrição do produto encontre "Código do produto"`
+        `produto comprado.\nEm seguida acesse "Ver detalhes"\nE na descrição do produto encontre "Código do produto"`
     );
     await context.reply(
       `Vamos começar ?`,
@@ -51,40 +50,79 @@ export default class RegisterCommand extends Composer {
   }
 
   async registerStart(context, next) {
+    console.log(context);
     const [, email] = context.message.text.split(' ');
+    if (!email || !email.match(/\w[^@]+@[^@]+\.[^@]+$/)) {
+      await context.reply(
+        `Não me parece um email...\n` +
+          `Pode ser que não funcione seu cadastro se não me enviar um e-mail válido`
+      );
+      return false;
+    }
+    this.dados.tgName = context.message.from.first_name;
     this.dados.email = email;
     await context.reply(
-      `Se seu e-mail for ${email} me envie o código de compra com o comando /compra antes`
+      `Se seu e-mail for ${email} me envie o código de compra com o comando /compra antes\n\nPor exemplo:\n/compra 123456789\n\n` +
+        `Caso tenha digitado seu e-mail incorretamente, basta reenviar seu e-mail com o comando /email na frente`
     );
-    await context.reply(`Por exemplo:\n/compra 123456789`);
-    this.hears(/^\/compra [0-9]/, async (secCtx) => {
+    this.hears(/^\/compra \w/, async (secCtx, next2) => {
       const [, codigo] = secCtx.message.text.split(' ');
+      console.log('Código IDENTIFICADO', codigo);
+      if (!codigo || !codigo.match(/[0-9]/)) {
+        await secCtx.reply(
+          `Somente números na id. da compra, não há outros caracteres.`
+        );
+        return false;
+      }
       this.dados.vendacodigo = codigo;
       await secCtx.reply(
-        `Entendi. Envie o código do produto com o comando /produto antes`
+        `Entendi. Se seu código for ${codigo}, envie o código do produto com o comando /produto antes\n\n` +
+          `Novamente, se o código estiver incorreto, basta reenviar o código com o comando /compra na frente\n\n`
       );
+      return true;
     });
-    this.hears(/^\/produto [0-9]/, async (pCtx) => {
+    this.hears(/^\/produto \w/, async (pCtx, next3) => {
       const [, productId] = pCtx.message.text.split(' ');
+      if (!productId || !productId.match(/[0-9]/)) {
+        await pCtx.reply('Somente números no código, não há outros caracteres');
+        return false;
+      }
       this.dados.productId = productId;
       const dados = `${this.dados.email}\nCompra: ${this.dados.vendacodigo}\nProduto: ${productId}`;
       await context.reply(
-        `Verifique seus dados:\n${dados}\nSe estiver tudo correto:\n/registrocompleto`
+        `Verifique seus dados:\n${dados}\nSe estiver tudo correto toque no comando abaixo:\n/registrocompleto`
       );
+      return true;
     });
-    this.hears(/^\/registrocompleto/, async (trdCtx) => {
+    this.hears(/^\/registrocompleto/, async (trdCtx, next4) => {
       if (this.dados.email !== null && this.dados.vendacodigo !== null) {
         this.dados.tgId = trdCtx.message.from.id;
-        this.subject.notify('RegisterComplete', this.dados);
-        await context.reply(
-          `Obrigado. Enviei seus dados para registro.\n` +
-            `Agora, nossa equipe irá confirmar seus dados.\n` +
-            `Aguarde cerca de 5 minutos. Não deve demorar mais que isso`
-        );
+        try {
+          const userValid = await this.database.userMethods.registerComplete(
+            this.dados
+          );
+          if (userValid) {
+            // this.subject.notify('RegisterComplete', this.dados);
+            await context.reply(
+              `Obrigado. Enviei seus dados para registro.\n` +
+                `Agora, nossa equipe irá confirmar seus dados.\n` +
+                `Aguarde cerca de 5 minutos. Não deve demorar mais que isso\n\n` +
+                `Caso após isso você não conseguir acessar, tente novamente pelo painel\n` +
+                `Basta dar um /help e ir em Perguntas frequentes > Sobre registro > Como faço o registro?\n`
+            );
+            return true;
+          }
+          await context.reply(`Dados não encontrados na API`);
+          return false;
+        } catch (error) {
+          await context.reply(`Deu errado`);
+          return false;
+        }
       } else {
         await context.reply(`Os dados não foram enviados corretamente`);
       }
-      return next();
+      return false;
     });
+    return next();
   }
 }

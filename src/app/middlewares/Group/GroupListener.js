@@ -23,23 +23,21 @@ export default class GroupListener extends Composer {
   }
 
   async messageListener(context, next) {
-    console.log(context.message);
+    // console.log(context.message);
     const { new_chat_title, left_chat_member, chat } = await context.message;
     if (new_chat_title) {
       this.subject.notify('updateTitleGroup', {
         chatId: chat.id,
         title: new_chat_title,
       });
-      return next();
     }
     if (left_chat_member) {
       this.subject.notify('leftChatMember', {
         chatId: chat.id,
         userTgId: left_chat_member.id,
       });
-      return next();
     }
-    return true;
+    return next();
   }
 
   async newChat(context, next) {

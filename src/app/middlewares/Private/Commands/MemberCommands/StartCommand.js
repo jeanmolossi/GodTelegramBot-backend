@@ -8,6 +8,7 @@ export default class StartCommand extends Composer {
     this.observer = subject;
 
     this.command('start', this.commandAction.bind(this));
+    this.command('help', this.commandAction.bind(this));
     return this;
   }
 
@@ -18,6 +19,9 @@ export default class StartCommand extends Composer {
         m.inlineKeyboard([
           [m.callbackButton('Me registrar', 'register')],
           [m.callbackButton('Meus comandos', 'myCommands')],
+          [m.callbackButton('Meus grupos', 'myGroups')],
+          [m.callbackButton('Minhas compras', 'myBuys')],
+          [m.callbackButton('Meus alertas', 'myWarns')],
           [m.callbackButton('Perguntas frequentes e Ajuda', 'faq')],
         ])
       )

@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 import User from '../../app/models/User';
 import Group from '../../app/models/Group';
 import UserGroup from '../../app/models/UserGroup';
@@ -11,8 +13,7 @@ class UserMethods {
   constructor(subject) {
     this.subject = subject;
 
-    this.subject.subscribe('RegisterComplete', this.registerComplete);
-
+    // this.subject.subscribe('RegisterComplete', this.registerComplete);
     return this;
   }
 
@@ -52,15 +53,22 @@ class UserMethods {
     return level;
   }
 
-  async findUserByTgId(tgId) {
-    const user = await User.findOrCreateByTgId(tgId);
+  async findUserByTgId(tgId, name = null) {
+    const user = await User.findOrCreateByTgId(tgId, name);
     return user;
   }
 
   async registerComplete(payload) {
-    const { email, vendacodigo, tgId, productId } = payload;
+    const { email, vendacodigo, tgId, productId, tgName } = payload;
+    const schema = yup.object().shape({
+      email: yup.string().email().required(),
+      vendacodigo: yup.number().required(),
+      productId: yup.number().required(),
+    });
 
-    const userRegister = await User.findOrCreateByTgId(tgId);
+    if (!(await schema.isValid(payload))) throw new Error('Invalid data');
+
+    const userRegister = await User.findOrCreateByTgId(tgId, tgName);
 
     const product = await Product.findOne({ where: { productId } });
     if (!product) return false;
@@ -95,8 +103,20 @@ class UserMethods {
         signType: 'Syncronizada',
       };
     }
-
     try {
+      const toUpdate = {
+        email: null,
+        name: null,
+      };
+      if (userRegister && userRegister.email === (null || ''))
+        toUpdate.email = email;
+
+      if (userRegister.name === (null || ''))
+        toUpdate.name = transaction.comprador.nome;
+
+      if (toUpdate.email !== null)
+        userRegister.update({ name: toUpdate.name, email: toUpdate.email });
+
       const newBuy = await Buy.create(buyFormat);
       await newBuy.setUser(userRegister);
       await newBuy.setProduct(product);
@@ -107,6 +127,36 @@ class UserMethods {
     }
 
     return true;
+  }
+
+  async findUserCompleteByTgId(userTgId) {
+    const user = await User.findOne({
+      where: { tgId: `${userTgId}` },
+      include: [
+        {
+          model: Buy,
+          include: [
+            {
+              model: Product,
+              include: [{ model: Group }],
+            },
+          ],
+        },
+      ],
+    });
+    return user;
+  }
+
+  async userWarnsByTgId(userTgId) {
+    const user = await User.findOne({
+      where: { tgId: `${userTgId}` },
+      include: [
+        {
+          model: Group,
+        },
+      ],
+    });
+    return user;
   }
 }
 

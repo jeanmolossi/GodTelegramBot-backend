@@ -14,7 +14,7 @@ class EventEmitter {
     events.split(' ').forEach((event) => {
       this.observers[event] = this.observers[event] || [];
       this.observers[event].push(listener);
-      console.log(this.observers);
+      console.log('Subscribing: ', event);
     });
     return this;
   }
@@ -30,7 +30,7 @@ class EventEmitter {
   }
 
   notify(event, ...args) {
-    console.log('Notifing ', this.observers.length, ' Observers', event);
+    console.log('Notifing ', Object.keys(this.observers).length, ' Observers');
     if (this.observers[event]) {
       console.log('Single Event: ', this.observers[event]);
       const cloned = [].concat(this.observers[event]);

@@ -78,38 +78,38 @@ export default class Commands extends Composer {
    */
 
   async useMemberCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(
       level >= this.levelRole.Default_User && level < this.levelRole.Dev
     );
   }
 
   async useHelperCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(level >= this.levelRole.Helper && level < this.levelRole.Dev);
   }
 
   async useSubModeratorCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(
       level >= this.levelRole.SubModerator && level < this.levelRole.Dev
     );
   }
 
   async useModeratorCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(level >= this.levelRole.Moderator && level < this.levelRole.Dev);
   }
 
   async useAdministratorCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(
       level >= this.levelRole.Administrator && level < this.levelRole.Dev
     );
   }
 
   async useCoFounderCommands(context, next) {
-    const { level } = this.payload
+    const { level } = this.payload;
     return !!(level >= this.levelRole.CoFounder && level < this.levelRole.Dev);
   }
 

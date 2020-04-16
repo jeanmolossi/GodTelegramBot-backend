@@ -25,6 +25,4 @@ export default class Group extends Composer {
     }
     return false;
   }
-
-  async GroupListener(context, next) {}
 }

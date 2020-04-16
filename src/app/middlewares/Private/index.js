@@ -23,6 +23,7 @@ export default class Private extends Composer {
 
   async privateListener(context, next) {
     if (!context.message) return next();
+    if (context.message.chat.type !== 'private') return next();
     const user = await this.database.userMethods.findUserByTgId(
       context.message.from.id
     );
@@ -32,7 +33,11 @@ export default class Private extends Composer {
       const { file_id, file_unique_id } = profilePic.photos[0][0];
       const getFile = await context.telegram.getFile(file_id);
       const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${getFile.file_path}`; // DOWNLOAD URL
-      user.update({ tgPic: file_id });
+      if (user.name === null) {
+        user.update({ name: context.message.from.first_name, tgPic: file_id });
+      } else {
+        user.update({ tgPic: file_id });
+      }
     }
     return next();
     // console.log(fileUrl);

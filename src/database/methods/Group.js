@@ -1,5 +1,7 @@
+import { Op } from 'sequelize';
 import User from '../../app/models/User';
 import Group from '../../app/models/Group';
+import UserGroup from '../../app/models/UserGroup';
 import Buy from '../../app/models/Buy';
 
 class GroupMethods {
@@ -69,6 +71,30 @@ class GroupMethods {
 
   async findGroupByTgId(tgId) {
     const group = await Group.findByTgId(tgId);
+    return group;
+  }
+
+  async findGroupStaff(tgId) {
+    const group = await Group.findOne({
+      where: { tgId: `${tgId}` },
+      include: [{ model: User }],
+    });
+    const users = group.Users.filter(
+      (user) => user && user.UserGroup.userRole >= 3
+    );
+    return users;
+  }
+
+  async findLevelUserByGroup(tgId, userTgId) {
+    const group = await Group.findOne({
+      where: { tgId: `${tgId}` },
+      include: [
+        {
+          model: User,
+          where: { tgId: `${userTgId}` },
+        },
+      ],
+    });
     return group;
   }
 }

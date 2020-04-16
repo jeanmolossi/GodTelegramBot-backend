@@ -40,7 +40,7 @@ class User extends Model {
     this.belongsTo(models.Config, { through: 'UserConfig' });
   }
 
-  static async findOrCreateByTgId(tgId) {
+  static async findOrCreateByTgId(tgId, name = null) {
     const [user] = await this.findOrCreate({
       where: { tgId: `${tgId}` },
       include: [
@@ -52,12 +52,16 @@ class User extends Model {
         },
       ],
     });
+    if (user && !(name === null) && user.name === (null || '')) {
+      user.update({ name });
+    }
     return user;
   }
 
-  static async findByTgId(tgId) {
+  static async findByTgId(tgId, ...cond) {
     const user = await this.findOne({
       where: { tgId: `${tgId}` },
+      ...cond,
     });
     return user;
   }
