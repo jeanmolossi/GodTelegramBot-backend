@@ -24,6 +24,10 @@ export default class HelpCommand extends Composer {
     if (userRole >= 5) {
       await this.userModerator(context);
     }
+    if (userRole >= 6) {
+      await this.userAdministrator(context);
+    }
+    return next();
   }
 
   async userHelper(context) {
@@ -66,6 +70,27 @@ export default class HelpCommand extends Composer {
             ),
           ],
           [Markup.callbackButton('Como funciona /info ?', 'howWorkInfo')],
+        ]),
+      }
+    );
+  }
+
+  async userAdministrator(context) {
+    await context.telegram.sendMessage(
+      context.message.from.id,
+      `Você pode usar as funções de Administrator\n` +
+        `/settings\n/reload\n/ban\n/unban\n/kick`,
+      {
+        reply_markup: Markup.inlineKeyboard([
+          [
+            Markup.callbackButton(
+              'Como funciona o /settings ?',
+              'howWorkSettings'
+            ),
+          ],
+          [Markup.callbackButton('Como funciona o /ban ?', 'howWorkBan')],
+          [Markup.callbackButton('Como funciona o /unban ?', 'howWorkUnban')],
+          [Markup.callbackButton('Como funciona o /kick ?', 'howWorkKick')],
         ]),
       }
     );

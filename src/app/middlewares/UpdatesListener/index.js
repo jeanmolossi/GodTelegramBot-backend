@@ -11,6 +11,7 @@ import WarnsListener from './Listeners/WarnsListener';
 import HelperListener from './SubListeners/HelperListener';
 import SubModeratorListener from './SubListeners/SubModeratorListener';
 import ModeratorListener from './SubListeners/ModeratorListener';
+import AdministratorListener from './SubListeners/AdministratorListener';
 
 export default class UpdateListener extends Composer {
   constructor(database, subject) {
@@ -28,6 +29,7 @@ export default class UpdateListener extends Composer {
     this.use(new HelperListener(subject));
     this.use(new SubModeratorListener(subject));
     this.use(new ModeratorListener(subject));
+    this.use(new AdministratorListener(subject));
 
     this.action('firstMenuStartAction', this.firstMenuStartAction.bind(this));
   }

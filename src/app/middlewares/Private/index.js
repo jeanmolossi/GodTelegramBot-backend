@@ -30,9 +30,15 @@ export default class Private extends Composer {
     if (!user) return false;
     if (user.tgPic === null) {
       const profilePic = await context.telegram.getUserProfilePhotos(user.tgId);
-      const { file_id, file_unique_id } = profilePic.photos[0][0];
-      const getFile = await context.telegram.getFile(file_id);
-      const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${getFile.file_path}`; // DOWNLOAD URL
+      let file_id = null;
+      if (profilePic.total_count > 0) {
+        const { file_unique_id } = profilePic.photos[0][0];
+        file_id = profilePic.photos[0][0].file_id;
+        const getFile = await context.telegram.getFile(file_id);
+        const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${getFile.file_path}`; // DOWNLOAD URL
+      } else {
+        file_id = null;
+      }
       if (user.name === null) {
         user.update({ name: context.message.from.first_name, tgPic: file_id });
       } else {

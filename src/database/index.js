@@ -9,11 +9,22 @@ import Buy from '../app/models/Buy';
 import Product from '../app/models/Product';
 import Notification from '../app/models/Notification';
 import Config from '../app/models/Config';
+import ParentChildInGroup from '../app/models/ParentChildInGroup';
 
 import UserMethods from './methods/User';
 import GroupMethods from './methods/Group';
+import WarnMethods from './methods/Warn';
 
-const models = [User, Group, UserGroup, Buy, Product, Notification, Config];
+const models = [
+  User,
+  Group,
+  UserGroup,
+  Buy,
+  Product,
+  Notification,
+  Config,
+  ParentChildInGroup,
+];
 
 const needSync = process.env.NEEDSYNC || false;
 const needForce = process.env.NEEDFORCE || false;
@@ -37,6 +48,7 @@ class Database {
 
     this.userMethods = new UserMethods(subject);
     this.groupMethods = new GroupMethods(subject);
+    this.warnMethods = new WarnMethods(subject);
 
     this.levelRole = {
       Default_User: 1,

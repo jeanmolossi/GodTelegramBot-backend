@@ -1,17 +1,24 @@
-import { Op } from 'sequelize';
 import User from '../../app/models/User';
 import Group from '../../app/models/Group';
 import UserGroup from '../../app/models/UserGroup';
 import Buy from '../../app/models/Buy';
+import ParentChild from '../../app/models/ParentChildInGroup';
 
 class GroupMethods {
   constructor(subject) {
+    this.methods = this;
     this.subject = subject;
 
-    this.subject.subscribe('updateMigrateGroup', this.updateMigrateGroup);
-    this.subject.subscribe('updateTitleGroup', this.updateTitleGroup);
-    this.subject.subscribe('newChat', this.findOrCreateGroup);
-    this.subject.subscribe('leftChatMember', this.leftChatMember);
+    this.subject.subscribe(
+      'updateMigrateGroup',
+      this.updateMigrateGroup.bind(this)
+    );
+    this.subject.subscribe(
+      'updateTitleGroup',
+      this.updateTitleGroup.bind(this)
+    );
+    this.subject.subscribe('newChat', this.findOrCreateGroup.bind(this));
+    this.subject.subscribe('leftChatMember', this.leftChatMember.bind(this));
 
     return this;
   }
@@ -62,11 +69,49 @@ class GroupMethods {
 
   async updateTitleGroup(payload) {
     const { chatId, title } = payload;
-    console.log(chatId);
+    // console.log(chatId);
     const group = await Group.findByTgId(chatId);
     if (!group) return false;
     await group.update({ name: title });
     return true;
+  }
+
+  async updateGroupUserCount(groupTgId, context) {
+    try {
+      const group = await Group.findOne({ where: { tgId: `${groupTgId}` } });
+      if (!group) {
+        return false;
+      }
+      const chatCount =
+        (await context.telegram.getChatMembersCount(groupTgId)) - 1;
+
+      await group.update({ userCount: chatCount });
+    } catch (error) {
+      console.log(error);
+    }
+    return true;
+  }
+
+  async leftChatMember({ chatId, userTgId, context }) {
+    const hasParent = await ParentChild.findOne({
+      where: {
+        groupTgId: `${chatId}`,
+        childTgId: `${userTgId}`,
+      },
+    });
+    await this.updateGroupUserCount.call(this, chatId, context);
+    const user = await User.findByTgId(userTgId);
+    if (user) {
+      await UserGroup.destroy({ where: { UserId: user.id } });
+      if (hasParent) {
+        await ParentChild.destroy({
+          where: {
+            childTgId: `${userTgId}`,
+            groupTgId: `${chatId}`,
+          },
+        });
+      }
+    }
   }
 
   async findGroupByTgId(tgId) {

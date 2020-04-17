@@ -115,7 +115,9 @@ export default class RegisterCommand extends Composer {
           await context.reply(`Dados não encontrados na API`);
           return false;
         } catch (error) {
-          await context.reply(`Deu errado`);
+          await context.reply(
+            `Algo saiu errado, não foi possível concluir seu registro`
+          );
           return false;
         }
       } else {

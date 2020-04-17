@@ -114,9 +114,14 @@ export default class Commands extends Composer {
   }
 
   async useFounderCommands(context, next) {
-    const { level } = await this.database.userMethods.userLevel(
+    const allUser = await this.database.groupMethods.findLevelUserByGroup(
+      context.message.chat.id,
       context.message.from.id
     );
+    if (allUser === null) return false;
+    const { Users } = allUser;
+    const { userRole } = Users[0].UserGroup;
+    const level = userRole;
     this.payload.level = level;
     return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);
   }
