@@ -30,8 +30,13 @@ export default class GroupListener extends Composer {
   }
 
   async messageListener(context, next) {
-    // console.log(context.message);
-    const { new_chat_title, left_chat_member, chat } = await context.message;
+    console.log(context.message);
+    const {
+      new_chat_title,
+      left_chat_member,
+      chat,
+      reply_to_message,
+    } = await context.message;
     try {
       if (new_chat_title) {
         await this.subject.notify('updateTitleGroup', {
@@ -48,6 +53,21 @@ export default class GroupListener extends Composer {
           userTgId: left_chat_member.id,
           context,
         });
+      }
+      if (reply_to_message) {
+        const [botText] = reply_to_message.text.split('\n');
+        if (botText === 'Configuração de API') {
+          const apiCode = context.message.text;
+          if (!apiCode) return next();
+          const userConfig = context.message.from.id;
+          this.subject.notify('apiConfig', { userConfig, apiCode, context });
+        }
+        if (botText === 'Adicionar produto') {
+          const productId = context.message.text;
+          if (!productId) return next();
+          const userConfig = context.message.from.id;
+          this.subject.notify('productAdd', { userConfig, productId, context });
+        }
       }
     } catch (error) {
       console.log(error);

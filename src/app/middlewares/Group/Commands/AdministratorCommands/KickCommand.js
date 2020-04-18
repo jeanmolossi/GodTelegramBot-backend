@@ -8,6 +8,24 @@ export default class KickCommand extends Composer {
   }
 
   async commandAction(context, next) {
-    await context.reply(`KickCommand Ok`);
+    const { message } = context.update;
+    if (!('reply_to_message' in message)) return next();
+    const { reply_to_message } = message;
+
+    const until_date = new Date().getTime() / 1000 + 60 * 3;
+    await context.telegram.kickChatMember(
+      reply_to_message.chat.id,
+      reply_to_message.from.id,
+      { until_date }
+    );
+    let group = '';
+    if (reply_to_message.chat.type === 'group')
+      group = 'Usuário pode retornar com link de convite';
+    await context.deleteMessage();
+    await context.telegram.sendMessage(
+      message.from.id,
+      `Usuário expulso. ${group}`
+    );
+    return next();
   }
 }

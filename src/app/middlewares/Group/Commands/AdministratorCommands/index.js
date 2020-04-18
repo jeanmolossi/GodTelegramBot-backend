@@ -6,13 +6,13 @@ import BanCommand from './BanCommand';
 import UnbanCommand from './UnbanCommand';
 import KickCommand from './KickCommand';
 
-export default class AdministratorCommands extends Composer{
-  constructor(database){
+export default class AdministratorCommands extends Composer {
+  constructor(database, subject) {
     super();
-    this.use( new SettingsCommand(database) );
-    this.use( new ReloadCommand(database) );
-    this.use( new BanCommand(database) );
-    this.use( new UnbanCommand(database) );
-    this.use( new KickCommand(database) );
+    this.use(new SettingsCommand(database, subject));
+    this.use(new ReloadCommand(database, subject));
+    this.use(new BanCommand(database, subject));
+    this.use(new UnbanCommand(database, subject));
+    this.use(new KickCommand(database, subject));
   }
 }

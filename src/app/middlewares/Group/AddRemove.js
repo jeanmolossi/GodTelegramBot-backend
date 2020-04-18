@@ -22,8 +22,8 @@ export default class AddRemove extends Composer {
     if (level >= 5) {
       for (const member of context.update.message.new_chat_members) {
         await this.add_member_highRole.call(this, context, member);
-        await this.add_bot_highRole.call(this, context, member);
-        await this.add_me_highRole.call(this, context, member);
+        await this.add_bot.call(this, context, member);
+        await this.add_me.call(this, context, member);
       }
     } else {
       for (const member of context.update.message.new_chat_members) {
@@ -114,45 +114,6 @@ Você sempre foi o melhor!
       console.log(error);
     }
 
-    return true;
-  }
-
-  async add_bot_highRole(context, member) {
-    if (!(member.is_bot && !process.env.BOT_TOKEN.includes(member.id))) {
-      return false;
-    }
-
-    await context.deleteMessage();
-    await context.reply(
-      `Adicionou outro bot ${context.message.from.first_name} ? Você está me trocando?`
-    );
-    return true;
-  }
-
-  async add_me_highRole(context, member) {
-    if (!(member.is_bot && process.env.BOT_TOKEN.includes(member.id))) {
-      return false;
-    }
-    const { id, title } = await context.message.chat;
-    await this.database.groupMethods.findOrCreateGroup(id, title);
-
-    await context.replyWithMarkdown(`
-Obrigado amigo! [@${context.message.from.first_name}](tg://user?id=${context.message.from.id})!
-Você sempre foi o melhor!
-    `);
-
-    const { permissions } = await context.telegram.getChat(id);
-    if (
-      permissions.can_change_info === true ||
-      permissions.can_invite_users === true ||
-      permissions.can_pin_messages === true ||
-      permissions.can_add_web_page_previews === true
-    ) {
-      await context.replyWithMarkdown(
-        `Lembre-se de mudar as _permissões_ de usuários do grupo\n` +
-          `Todos estão podendo *invitar usuários* e *mudar a info* do grupo`
-      );
-    }
     return true;
   }
 }

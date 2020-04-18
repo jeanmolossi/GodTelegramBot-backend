@@ -8,6 +8,8 @@ import GroupsListener from './Listeners/GroupsListener';
 import BuysListener from './Listeners/BuysListener';
 import WarnsListener from './Listeners/WarnsListener';
 
+import SettingsListener from './Listeners/SettingsListener';
+
 import HelperListener from './SubListeners/HelperListener';
 import SubModeratorListener from './SubListeners/SubModeratorListener';
 import ModeratorListener from './SubListeners/ModeratorListener';
@@ -30,6 +32,13 @@ export default class UpdateListener extends Composer {
     this.use(new SubModeratorListener(subject));
     this.use(new ModeratorListener(subject));
     this.use(new AdministratorListener(subject));
+
+    this.use(
+      Composer.acl(
+        this.userLevel.bind(this),
+        new SettingsListener(database, subject)
+      )
+    );
 
     this.action('firstMenuStartAction', this.firstMenuStartAction.bind(this));
   }
@@ -54,5 +63,25 @@ export default class UpdateListener extends Composer {
     } catch (error) {
       return next();
     }
+  }
+
+  async userLevel(context, next) {
+    try {
+      const { callback_query } = context.update;
+      // console.log(callback_query);
+      const allUser = await this.database.groupMethods.findLevelUserByGroup(
+        callback_query.message.chat.id,
+        callback_query.from.id
+      );
+      if (allUser === null) return false;
+      const { Users } = allUser;
+      const { userRole } = Users[0].UserGroup;
+      if (userRole >= 6) {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
+    return false;
   }
 }

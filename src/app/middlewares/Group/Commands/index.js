@@ -10,7 +10,7 @@ import FounderCommands from './FounderCommands';
 import DevCommands from './DevCommands';
 
 export default class Commands extends Composer {
-  constructor(database) {
+  constructor(database, subject) {
     super();
 
     this.database = database;
@@ -18,48 +18,51 @@ export default class Commands extends Composer {
     this.payload = {};
 
     this.use(
-      Composer.acl(this.useDevCommands.bind(this), new DevCommands(database))
+      Composer.acl(
+        this.useDevCommands.bind(this),
+        new DevCommands(database, subject)
+      )
     );
     this.use(
       Composer.acl(
         this.useFounderCommands.bind(this),
-        new FounderCommands(database)
+        new FounderCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useCoFounderCommands.bind(this),
-        new CoFounderCommands(database)
+        new CoFounderCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useAdministratorCommands.bind(this),
-        new AdministratorCommands(database)
+        new AdministratorCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useModeratorCommands.bind(this),
-        new ModeratorCommands(database)
+        new ModeratorCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useSubModeratorCommands.bind(this),
-        new SubModeratorCommands(database)
+        new SubModeratorCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useHelperCommands.bind(this),
-        new HelperCommands(database)
+        new HelperCommands(database, subject)
       )
     );
     this.use(
       Composer.acl(
         this.useMemberCommands.bind(this),
-        new MemberCommands(database)
+        new MemberCommands(database, subject)
       )
     );
   }

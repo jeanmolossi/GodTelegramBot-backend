@@ -1,5 +1,7 @@
 import Composer from 'telegraf/composer';
 
+import {} from 'date-fns';
+
 export default class MuteCommand extends Composer {
   constructor(database) {
     super();
@@ -9,8 +11,8 @@ export default class MuteCommand extends Composer {
   }
 
   async commandAction(context, next) {
-    const { message } = context.update;
     try {
+      const { message } = context.update;
       if (!('reply_to_message' in message)) {
         return next();
       }
@@ -29,19 +31,14 @@ export default class MuteCommand extends Composer {
           can_pin_messages: false,
         };
         await context.telegram.restrictChatMember(
-          message.chat.id,
+          message.reply_to_message.chat.id,
           message.reply_to_message.from.id,
-          permissions,
-          until_date
-        );
-        console.log(
-          await context.telegram.getChatMember(
-            message.chat.id,
-            message.reply_to_message.from.id
-          )
+          {
+            permissions,
+            until_date,
+          }
         );
       }
-      await context.reply(`MuteCommand Ok`);
     } catch (error) {
       console.log(error);
     }

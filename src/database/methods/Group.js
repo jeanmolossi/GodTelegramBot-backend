@@ -28,6 +28,7 @@ class GroupMethods {
     groupName = null,
     adminTgId = null,
     productId = null,
+    context = null,
   }) {
     // IF HAS GROUP WITH THIS TGID - IF NO HAS CREATE THIS
     const [group, hasGroup] = await Group.findOrCreate({
@@ -56,6 +57,9 @@ class GroupMethods {
       } else {
         return false;
       }
+    }
+    if (context !== null) {
+      await context.reply(`✅ Configurações reinicializadas`);
     }
     return group;
   }

@@ -14,6 +14,8 @@ import ParentChildInGroup from '../app/models/ParentChildInGroup';
 import UserMethods from './methods/User';
 import GroupMethods from './methods/Group';
 import WarnMethods from './methods/Warn';
+import ProductMethods from './methods/Product';
+import ConfigMethods from './methods/Config';
 
 const models = [
   User,
@@ -49,6 +51,8 @@ class Database {
     this.userMethods = new UserMethods(subject);
     this.groupMethods = new GroupMethods(subject);
     this.warnMethods = new WarnMethods(subject);
+    this.productMethods = new ProductMethods(subject);
+    this.configMethods = new ConfigMethods(subject);
 
     this.levelRole = {
       Default_User: 1,

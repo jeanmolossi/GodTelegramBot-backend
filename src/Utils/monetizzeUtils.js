@@ -25,7 +25,7 @@ export const isProduct = async (productId, consumerKey) => {
     );
     if (transactions.status === 200 && transactions.data.dados.length > 0) {
       console.log('Product ready', transactions.data.dados[0].produto.nome);
-      return true;
+      return transactions.data.dados[0].produto;
     }
   }
   return false;
