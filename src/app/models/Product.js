@@ -7,6 +7,8 @@ class Product extends Model {
         id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
         productName: Sequelize.STRING,
         productId: { type: Sequelize.STRING, unique: true },
+        productActive: { type: Sequelize.BOOLEAN, defaultValue: true },
+        productMonetizze: { type: Sequelize.BOOLEAN, defaultValue: true },
       },
       {
         sequelize,

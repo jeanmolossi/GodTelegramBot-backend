@@ -2,22 +2,45 @@ import { Router } from 'express';
 
 import SessionController from '../app/controllers/SessionController';
 import UserController from '../app/controllers/UserController';
+import ConfigController from '../app/controllers/ConfigController';
+import ProductController from '../app/controllers/ProductController';
+import MultipleProductController from '../app/controllers/MultipleProductController';
 
 import authMiddleware from '../app/middlewares/auth';
 
 const routes = new Router();
 
 routes.get('/', (req, res) => {
-  res.json({ Hello: 'World' });
+  res.json({ Hello: 'World', That_is: 'Root path' });
 });
 
 // BASIC ROUTES
 routes.post('/session', SessionController.store);
+routes.post('/config/rehydrate', SessionController.indexConfig);
+
 routes.post('/user', UserController.store);
+
+// ROUTES NEEDED AUTH
 
 routes.use(authMiddleware);
 routes.get('/user', UserController.index);
 routes.put('/user', UserController.update);
 routes.delete('/user', UserController.delete);
+
+// CONFIG API ROUTE
+
+routes.post('/config', ConfigController.store);
+routes.get('/config', ConfigController.index);
+routes.put('/config', ConfigController.update);
+routes.delete('/config', ConfigController.delete);
+
+// SINGLE PRODUCT ROUTE
+
+routes.get('/product/:id', ProductController.index);
+routes.post('/product', ProductController.store);
+routes.put('/product/:id', ProductController.update);
+routes.delete('/product/:id', ProductController.delete);
+
+routes.get('/products', MultipleProductController.index);
 
 export default routes;

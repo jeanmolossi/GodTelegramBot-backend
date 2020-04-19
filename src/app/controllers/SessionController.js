@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import * as yup from 'yup';
 
 import User from '../models/User';
+import Config from '../models/Config';
 
 class SessionController {
   async store(req, res) {
@@ -38,6 +39,33 @@ class SessionController {
         expiresIn: '7d',
       }),
     });
+  }
+
+  async indexConfig(req, res) {
+    const schemaRehydrate = yup.object().shape({
+      email: yup.string().email().required(),
+    });
+
+    if (!(await schemaRehydrate.isValid(req.body)))
+      return res.status(400).json({ error: 'Validation fail to reHydrate' });
+
+    const { email } = req.body;
+
+    const userConfig = await User.findOne({
+      where: { email, canLogin: true },
+      attributes: ['name', 'email', 'level', 'tgId', 'tgPic', 'ConfigId'],
+      include: [
+        {
+          model: Config,
+          attributes: ['consumerKey'],
+        },
+      ],
+    });
+
+    if (!(userConfig && userConfig.Config))
+      return res.status(401).json({ error: 'User has not config' });
+
+    return res.json(userConfig);
   }
 }
 
