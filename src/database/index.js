@@ -10,12 +10,16 @@ import Product from '../app/models/Product';
 import Notification from '../app/models/Notification';
 import Config from '../app/models/Config';
 import ParentChildInGroup from '../app/models/ParentChildInGroup';
+import Rule from '../app/models/Rule';
+import Spam from '../app/models/Spam';
 
 import UserMethods from './methods/User';
 import GroupMethods from './methods/Group';
 import WarnMethods from './methods/Warn';
 import ProductMethods from './methods/Product';
 import ConfigMethods from './methods/Config';
+import RuleMethods from './methods/Rule';
+import SpamMethods from './methods/Spam';
 
 const models = [
   User,
@@ -26,6 +30,8 @@ const models = [
   Notification,
   Config,
   ParentChildInGroup,
+  Rule,
+  Spam,
 ];
 
 const needSync = process.env.NEEDSYNC || false;
@@ -53,6 +59,8 @@ class Database {
     this.warnMethods = new WarnMethods(subject);
     this.productMethods = new ProductMethods(subject);
     this.configMethods = new ConfigMethods(subject);
+    this.ruleMethods = new RuleMethods(subject);
+    this.spamMethods = new SpamMethods(subject);
 
     this.levelRole = {
       Default_User: 1,

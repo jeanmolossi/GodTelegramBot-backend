@@ -3,6 +3,7 @@ import Composer from 'telegraf/composer';
 import StartCommand from './StartCommand';
 import HelpCommand from './HelpCommand';
 import StaffCommand from './StaffCommand';
+import InitCommand from './InitCommand';
 
 export default class MemberCommands extends Composer {
   constructor(database) {
@@ -10,5 +11,6 @@ export default class MemberCommands extends Composer {
     this.use(new StartCommand(database));
     this.use(new HelpCommand(database));
     this.use(new StaffCommand(database));
+    this.use(new InitCommand(database));
   }
 }

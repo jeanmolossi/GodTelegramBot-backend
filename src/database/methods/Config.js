@@ -17,7 +17,9 @@ export default class ConfigMethods {
       include: [{ model: Config }],
     });
     if (user.Config === null) {
-      const newConfig = await Config.create({ consumerKey: apiCode });
+      const [newConfig] = await Config.findOrCreate({
+        where: { consumerKey: apiCode },
+      });
       await user.setConfig(newConfig);
       await context.deleteMessage();
       await context.telegram.deleteMessage(
@@ -30,6 +32,11 @@ export default class ConfigMethods {
       );
       return true;
     }
+    await context.deleteMessage();
+    await context.telegram.deleteMessage(
+      context.message.chat.id,
+      context.message.reply_to_message.message_id
+    );
     await context.reply(
       `Usuário já possui uma configuração de API definida, para alterá-la deve ser feita pelo painel web`
     );

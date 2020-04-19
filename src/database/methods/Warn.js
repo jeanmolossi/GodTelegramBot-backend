@@ -23,7 +23,7 @@ export default class WarnMethods {
 
   async setParent(groupTgId, childTgId, parentTgId) {
     const group = await Group.findOrCreateByTgId(groupTgId);
-    const user = await User.findByTgId(childTgId);
+    const user = await User.findOrCreateByTgId(childTgId);
 
     await group.addUser(user, {
       through: { warnsNumber: '0' },

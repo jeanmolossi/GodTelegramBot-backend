@@ -5,6 +5,7 @@ import ReloadCommand from './ReloadCommand';
 import BanCommand from './BanCommand';
 import UnbanCommand from './UnbanCommand';
 import KickCommand from './KickCommand';
+import PromoteCommand from './PromoteCommand';
 
 export default class AdministratorCommands extends Composer {
   constructor(database, subject) {
@@ -14,5 +15,6 @@ export default class AdministratorCommands extends Composer {
     this.use(new BanCommand(database, subject));
     this.use(new UnbanCommand(database, subject));
     this.use(new KickCommand(database, subject));
+    this.use(new PromoteCommand(database, subject));
   }
 }

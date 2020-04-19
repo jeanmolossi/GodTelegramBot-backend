@@ -82,9 +82,7 @@ export default class Commands extends Composer {
 
   async useMemberCommands(context, next) {
     const { level } = this.payload;
-    return !!(
-      level >= this.levelRole.Default_User && level < this.levelRole.Dev
-    );
+    return true;
   }
 
   async useHelperCommands(context, next) {

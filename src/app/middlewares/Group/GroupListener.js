@@ -30,7 +30,7 @@ export default class GroupListener extends Composer {
   }
 
   async messageListener(context, next) {
-    console.log(context.message);
+    // console.log(context.message);
     const {
       new_chat_title,
       left_chat_member,

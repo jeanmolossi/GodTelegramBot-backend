@@ -1,5 +1,7 @@
 import Composer from 'telegraf';
 
+import { warn } from '../../../Utils/groupUtils';
+
 export default class AddRemove extends Composer {
   constructor(database, subject) {
     super();
@@ -28,7 +30,7 @@ export default class AddRemove extends Composer {
     } else {
       for (const member of context.update.message.new_chat_members) {
         await this.add_member.call(this, context, member);
-        await this.add_bot.call(this, context, member);
+        await this.add_bot_member.call(this, context, member);
         await this.add_me.call(this, context, member);
       }
     }
@@ -68,6 +70,30 @@ export default class AddRemove extends Composer {
     await context.reply(
       `Adicionou outro bot ${context.message.from.first_name} ? Você está me trocando?`
     );
+    return true;
+  }
+
+  async add_bot_member(context, member) {
+    if (!(member.is_bot && !process.env.BOT_TOKEN.includes(member.id))) {
+      return false;
+    }
+
+    try {
+      await context.telegram.kickChatMember(context.message.chat.id, member.id);
+      await context.deleteMessage();
+      await context.reply(
+        `Adicionou um bot ${context.message.from.first_name} ? Tá de brincation with me?`
+      );
+      await warn(
+        context,
+        this.database,
+        context.message.from.id,
+        1,
+        'Adicionou um bot ao grupo'
+      );
+    } catch (error) {
+      console.log(error);
+    }
     return true;
   }
 

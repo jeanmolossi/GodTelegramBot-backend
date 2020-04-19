@@ -18,6 +18,7 @@ class UserMethods {
 
     // this.subject.subscribe('RegisterComplete', this.registerComplete);
     this.subject.subscribe('infoCommand', this.infoCommand.bind(this));
+    this.subject.subscribe('updateUserRole', this.updateUserRole.bind(this));
     return this;
   }
 
@@ -209,6 +210,33 @@ class UserMethods {
       Extra.markdown()
     );
     return false;
+  }
+
+  async updateUserRole({ userTgId, chatTgId, roleId, context }) {
+    try {
+      const user = await User.findOne({
+        where: { tgId: `${userTgId}` },
+        include: [{ model: Group, where: { tgId: `${chatTgId}` } }],
+      });
+      if (!(user && user.Groups.length > 0)) {
+        return false;
+      }
+      const ug = user.Groups[0].UserGroup;
+      const dbLine = await UserGroup.findOne({
+        where: { UserId: `${ug.UserId}`, GroupId: `${ug.GroupId}` },
+      });
+
+      if (!dbLine) return false;
+      await dbLine.update({ userRole: `${roleId}` });
+      await context.deleteMessage();
+      await context.reply(
+        `Ocorreu tudo bem! O usuário foi definido com a função.`
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+    return true;
   }
 }
 

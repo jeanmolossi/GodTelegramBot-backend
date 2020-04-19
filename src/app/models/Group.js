@@ -18,6 +18,10 @@ class Group extends Model {
 
   static associate(models) {
     this.belongsToMany(models.User, { through: models.UserGroup });
+    this.belongsToMany(models.Rule, {
+      through: 'RulesGroup',
+    });
+    this.belongsToMany(models.Spam, { through: 'SpamsGroup' });
   }
 
   static async findOrCreateByTgId(tgId) {

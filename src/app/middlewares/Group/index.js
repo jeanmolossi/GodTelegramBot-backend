@@ -2,6 +2,7 @@ import Composer from 'telegraf/composer';
 
 import Commands from './Commands';
 import GroupListener from './GroupListener';
+import Message from './Message';
 
 export default class Group extends Composer {
   constructor(database, subject) {
@@ -16,6 +17,9 @@ export default class Group extends Composer {
     );
     this.use(
       Composer.acl(this.isGroup.bind(this), new Commands(database, subject))
+    );
+    this.use(
+      Composer.acl(this.isGroup.bind(this), new Message(database, subject))
     );
   }
 

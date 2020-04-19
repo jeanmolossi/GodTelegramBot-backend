@@ -15,10 +15,12 @@ export default class SettingsListener extends Composer {
     };
 
     this.action('settingsWelcome', this.settingsAction.bind(this));
+    this.action('rulesConfig', this.rulesConfig.bind(this));
     this.action('apiAdjust', this.apiAdjust.bind(this));
     this.action('defineProduct', this.defineProduct.bind(this));
     this.action('settingsProductAdd', this.settingsProductAdd.bind(this));
     this.action(/productSelect_[0-9]/, this.productSelect.bind(this));
+    this.action(/setRule_[0-9]_(on|off)/, this.setRule.bind(this));
 
     this.action('settingsCancel', this.settingsCancel.bind(this));
   }
@@ -32,7 +34,7 @@ export default class SettingsListener extends Composer {
           `Você pode alterar também direto no painel!`,
         Extra.markup((m) =>
           m.inlineKeyboard([
-            [m.callbackButton('Ativar Anti-Flood', 'moreRegister')],
+            [m.callbackButton('Ativar / Desativar regras', 'rulesConfig')],
             [m.callbackButton('Ajustar configurações de API', 'apiAdjust')],
             [m.callbackButton('Definir produto', 'defineProduct')],
             [m.callbackButton('Cancelar', 'settingsCancel')],
@@ -41,6 +43,113 @@ export default class SettingsListener extends Composer {
       );
     } catch (error) {
       return false;
+    }
+    return next();
+  }
+
+  async rulesConfig(context, next) {
+    if (!context.update.callback_query) return next();
+    try {
+      const rulesDb = await this.database.ruleMethods.getGroupRules(
+        context.update.callback_query.message.chat.id
+      );
+      let buttons = null;
+      let buttonsAdded = null;
+
+      const ruleType = [
+        'NULL_INPUT',
+        'DENY_SPAM', // 1
+        'DENY_FLOOD', // 2
+        'DENY_BOT', // 3
+        'DENY_BOT_FORWARD', // 4
+        'DENY_CHAT_FORWARD', // 5
+        'DENY_LINK', // 6
+      ];
+      const ruleName = [
+        'Erro',
+        'Anti-Spam',
+        'Anti-Flood',
+        'Anti-Bot',
+        'Anti-Encaminhar-de-bot',
+        'Anti-Enchaminhar-de-chats',
+        'Anti-Link',
+      ];
+      buttons = [];
+      buttonsAdded = [];
+      if (rulesDb.length > 0) {
+        rulesDb.map((ruleDB) => {
+          const ruleId = ruleType.indexOf(ruleDB.type);
+          if (ruleId > 0) {
+            buttonsAdded.push(ruleId);
+            buttons.push([
+              Markup.callbackButton(
+                `❌ Desativar ${ruleName[ruleId]}`,
+                `setRule_${ruleId}_off`
+              ),
+            ]);
+          }
+          return true;
+        });
+      }
+      ruleType.map((rule) => {
+        const ruleId = ruleType.indexOf(rule);
+        if (buttonsAdded.indexOf(ruleId) < 0 && ruleId !== 0) {
+          buttons.push([
+            Markup.callbackButton(
+              `✔️ Ativar ${ruleName[ruleId]}`,
+              `setRule_${ruleId}_on`
+            ),
+          ]);
+        }
+        return true;
+      });
+      buttons.push([Markup.callbackButton('Voltar', 'settingsWelcome')]);
+      buttons.push([Markup.callbackButton('Cancelar', 'settingsCancel')]);
+
+      await context.editMessageText(
+        `Escolha as regras que deseja ajustar\n` +
+          `Você pode alterar também direto no painel!`,
+        Extra.markup((m) => {
+          return buttons !== null
+            ? m.inlineKeyboard(buttons)
+            : m.inlineKeyboard([
+                [m.callbackButton('Voltar', 'settingsWelcome')],
+                [m.callbackButton('Cancelar', 'settingsCancel')],
+              ]);
+        })
+      );
+    } catch (error) {
+      return false;
+    }
+    return next();
+  }
+
+  async setRule(context, next) {
+    const { data } = context.update.callback_query;
+    const chatId = context.update.callback_query.message.chat.id;
+    const [ruleId, ruleStats] = data.replace(/setRule_/, '').split('_');
+    await this.subject.notify('setRule', {
+      ruleId,
+      ruleStats,
+      chatId,
+      userId: context.update.callback_query.from.id,
+      context,
+    });
+    try {
+      await context.editMessageText(
+        `Abaixo estão as configurações que você pode alterar\n` +
+          `Você pode alterar também direto no painel!`,
+        Extra.markup((m) =>
+          m.inlineKeyboard([
+            [m.callbackButton('Ativar / Desativar regras', 'rulesConfig')],
+            [m.callbackButton('Ajustar configurações de API', 'apiAdjust')],
+            [m.callbackButton('Definir produto', 'defineProduct')],
+            [m.callbackButton('Cancelar', 'settingsCancel')],
+          ])
+        )
+      );
+    } catch (error) {
+      console.log(error);
     }
     return next();
   }
@@ -106,8 +215,9 @@ export default class SettingsListener extends Composer {
   async settingsProductAdd(context, next) {
     await context.editMessageText(
       `_Adicionar produto_\n` +
-        `Para adicionar o produto, responda à esta mensagem com o código do ` +
-        `produto, fornecido na Monetizze para adicioná-lo à seus produtos`,
+        `Para adicionar o produto, *responda à esta mensagem* com o código do ` +
+        `produto, fornecido na Monetizze para adicioná-lo à seus produtos\n\n` +
+        `_Você deve selecionar esta mensagem e marcar como responder!_`,
       Extra.markdown().markup((m) =>
         m.inlineKeyboard([
           [
