@@ -20,7 +20,7 @@ export default class SpamMethods {
     const group = await Group.findByTgId(groupTgId);
     const spam = await Spam.findByText(text);
 
-    if (group === null) return false;
+    if (!group || group === null) return false;
 
     const groupSpam = await group.hasSpam(spam);
     if (groupSpam !== null) return groupSpam;

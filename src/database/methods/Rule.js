@@ -29,14 +29,14 @@ export default class RuleMethods {
     const group = await Group.findByTgId(groupTgId);
     const rule = await this.findOrCreateRule(ruleType);
 
-    if (group === null) return false;
+    if (!group || group === null) return false;
     await group.addRule(rule.id);
     return true;
   }
 
   async getGroupRules(groupTgId) {
     const group = await Group.findByTgId(groupTgId);
-    if (group === null) {
+    if (!group || group === null) {
       return false;
     }
     const rules = await group.getRule();
@@ -48,7 +48,7 @@ export default class RuleMethods {
     const group = await Group.findByTgId(groupTgId);
     const rule = await Rule.findByType(ruleType);
 
-    if (group === null) {
+    if (!group || group === null) {
       return false;
     }
     const ruleToRemove = await group.removeRule(rule);
@@ -59,7 +59,7 @@ export default class RuleMethods {
     const group = await Group.findByTgId(groupTgId);
     const rule = await Rule.findByType(ruleType);
 
-    if (group === null) {
+    if (!group || group === null) {
       return false;
     }
     const hasRule = await group.hasRule(rule);
