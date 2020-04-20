@@ -12,18 +12,19 @@ class Group extends Composer {
 
     this.use(Composer.acl(this.isGroup.bind(this), GroupListener));
     this.use(Composer.acl(this.isGroup.bind(this), Commands));
-    this.use(Composer.acl(this.isGroup.bind(this), Message));
+    this.use(
+      Composer.acl(
+        this.isGroup.bind(this) && this.applicableFilterUser.bind(this),
+        Message
+      )
+    );
   }
 
   async isGroup(context, next) {
     if (context.message && context.message.chat.type !== 'private') {
-      if (!(await this.applicableFilterUser(context))) {
-        console.log('FILTERING');
-        return true;
-      }
-      console.log('NOT FILTERING');
-      return false;
+      return true;
     }
+
     return false;
   }
 
