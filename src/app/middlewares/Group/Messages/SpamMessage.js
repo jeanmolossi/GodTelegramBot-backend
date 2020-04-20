@@ -12,12 +12,11 @@ export default class SpamMessage extends Composer {
 
   async messageFilter(context, next) {
     try {
-      if (
-        !(await this.database.ruleMethods.hasThatRule(
-          context.message.chat.id,
-          'DENY_SPAM'
-        ))
-      ) {
+      const hasRule = await this.database.ruleMethods.hasThatRule(
+        context.message.chat.id,
+        'DENY_SPAM'
+      );
+      if (!hasRule) {
         return next();
       }
       let words = [];

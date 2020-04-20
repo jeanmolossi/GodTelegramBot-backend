@@ -13,12 +13,11 @@ export default class FloodMessage extends Composer {
 
   async messageFilter(context, next) {
     console.log(this.floods);
-    if (
-      !(await this.database.ruleMethods.hasThatRule(
-        context.message.chat.id,
-        'DENY_FLOOD'
-      ))
-    ) {
+    const hasRule = await this.database.ruleMethods.hasThatRule(
+      context.message.chat.id,
+      'DENY_FLOOD'
+    );
+    if (!hasRule) {
       return next();
     }
 
