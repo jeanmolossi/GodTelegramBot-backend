@@ -47,9 +47,9 @@ export default class AddRemove extends Composer {
     const isClient = await this.database.userMethods.findUserCompleteByTgId(
       member.id
     );
-    if (isClient === null) return false;
+
     const { chat, from } = context.update.message;
-    if (!isClient.Buys || isClient.Buys.length <= 0 || isClient.Buys === null) {
+    if (isClient === null || !isClient.Buys || isClient.Buys.length <= 0) {
       await context.reply(
         `Não identifiquei o registro de ${member.first_name}`
       );
