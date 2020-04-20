@@ -18,8 +18,10 @@ class HelpCommand extends Composer {
       tgId: chat.id,
       userTgId: from.id,
     });
-
+    console.log(allUser);
     if (allUser !== null) Users = allUser.Users;
+    console.log(Users);
+    console.log(context.message);
     if (Users === null) return next();
 
     const { userRole } = Users[0].UserGroup;

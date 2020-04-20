@@ -18,8 +18,10 @@ class Group extends Composer {
   async isGroup(context, next) {
     if (context.message && context.message.chat.type !== 'private') {
       if (!(await this.applicableFilterUser(context))) {
+        console.log('FILTERING');
         return true;
       }
+      console.log('NOT FILTERING');
       return false;
     }
     return false;

@@ -25,7 +25,6 @@ class ChatForwardMessage extends Composer {
     ) {
       return next();
     }
-    console.log(context.message);
     if ((await warn(context, from.id, 1, 'Encaminhando mensagens...')) > 0) {
       await context.deleteMessage();
     }
