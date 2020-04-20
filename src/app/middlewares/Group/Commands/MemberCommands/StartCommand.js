@@ -8,6 +8,7 @@ class StartCommand extends Composer {
 
   async commandAction(context, next) {
     await context.reply(`StartCommand Ok`);
+    return next();
   }
 }
 
