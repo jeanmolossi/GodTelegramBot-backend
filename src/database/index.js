@@ -30,8 +30,8 @@ const models = [
   Spam,
 ];
 
-const needSync = process.env.NEEDSYNC || false;
-const needForce = process.env.NEEDFORCE || false;
+const needSync = process.env.NEEDSYNC || true;
+const needForce = process.env.NEEDFORCE || true;
 
 class Database {
   constructor() {
