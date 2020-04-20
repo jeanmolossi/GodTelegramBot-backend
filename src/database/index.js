@@ -42,7 +42,7 @@ class Database {
   }
 
   async init() {
-    this.sequelize = new Sequelize(database);
+    this.sequelize = new Sequelize(process.env.DATABASE_URL || database);
 
     models.map((model) => model && model.init(this.sequelize));
     models.map(
