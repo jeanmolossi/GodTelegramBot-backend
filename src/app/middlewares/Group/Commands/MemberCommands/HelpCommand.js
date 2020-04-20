@@ -16,6 +16,7 @@ class HelpCommand extends Composer {
       tgId: context.message.chat.id,
       userTgId: context.message.from.id,
     });
+    console.log(allUser, 'alL USER', context);
     if (allUser !== null) Users = allUser.Users;
     if (Users === null) return next();
 
