@@ -10,11 +10,13 @@ class HelpCommand extends Composer {
   }
 
   async commandAction(context, next) {
-    const { Users } = await FindLevelByGroupUtil.run({
+    let allUser = null;
+    let Users = null;
+    allUser = await FindLevelByGroupUtil.run({
       tgId: context.message.chat.id,
       userTgId: context.message.from.id,
     });
-
+    if (allUser !== null) Users = allUser.Users;
     if (Users === null) return next();
 
     const { userRole } = Users[0].UserGroup;

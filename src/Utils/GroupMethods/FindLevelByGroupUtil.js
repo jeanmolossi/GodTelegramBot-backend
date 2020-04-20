@@ -13,7 +13,7 @@ class FindLevelByGroupUtil {
       ],
     });
     if (!group || group === null) {
-      return null;
+      return group.Users === null;
     }
     return group;
   }
