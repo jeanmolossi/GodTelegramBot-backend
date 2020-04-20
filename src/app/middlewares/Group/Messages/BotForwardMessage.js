@@ -1,22 +1,18 @@
 import Composer from 'telegraf';
 import { warn } from '../../../../Utils/groupUtils';
 
-export default class BotForwardMessage extends Composer {
-  constructor(database) {
+import RuleMethods from '../../../../database/methods/Rule';
+
+class BotForwardMessage extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
     this.use(this.messageFilter.bind(this));
   }
 
   async messageFilter(context, next) {
     const { chat, from } = context.message;
-    if (
-      !(await this.database.ruleMethods.hasThatRule(
-        chat.id,
-        'DENY_BOT_FORWARD'
-      ))
-    ) {
+    if (!(await RuleMethods.hasThatRule(chat.id, 'DENY_BOT_FORWARD'))) {
       return next();
     }
     if (
@@ -30,7 +26,6 @@ export default class BotForwardMessage extends Composer {
     if (
       (await warn(
         context,
-        this.database,
         from.id,
         1,
         'Encaminhando mensagens proibidas de outros bots'
@@ -41,3 +36,5 @@ export default class BotForwardMessage extends Composer {
     return next();
   }
 }
+
+export default new BotForwardMessage();

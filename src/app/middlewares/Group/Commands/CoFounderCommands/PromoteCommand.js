@@ -1,10 +1,11 @@
 import Composer from 'telegraf/composer';
 
-export default class PromoteCommand extends Composer {
-  constructor(database, subject) {
+import EventEmitter from '../../../../../store/EventEmitter';
+
+class PromoteCommand extends Composer {
+  constructor() {
     super();
-    this.subject = subject;
-    this.database = database;
+    this.subject = EventEmitter;
 
     this.roles = [
       'null', // 0
@@ -57,3 +58,5 @@ export default class PromoteCommand extends Composer {
     return next();
   }
 }
+
+export default new PromoteCommand();

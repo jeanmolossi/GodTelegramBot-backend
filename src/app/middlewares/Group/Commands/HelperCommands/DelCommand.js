@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class DelCommand extends Composer {
-  constructor(database) {
+class DelCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('del', this.commandAction.bind(this));
   }
 
@@ -52,3 +51,5 @@ export default class DelCommand extends Composer {
     return next();
   }
 }
+
+export default new DelCommand();

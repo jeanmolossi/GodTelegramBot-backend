@@ -1,25 +1,21 @@
 import Telegraf from 'telegraf';
-import EventEmitter from './store/EventEmitter';
 import Database from './database';
 
 import Group from './app/middlewares/Group';
 import Private from './app/middlewares/Private';
-import UpdatesListener from './app/middlewares/UpdatesListener';
+import InlineKeyboardListener from './app/middlewares/InlineKeyboardListener';
 
-class GodBotController extends EventEmitter {
+class GodBotController {
   constructor(token, options = null) {
-    super();
-    // MAKE THIS CONTROLLER AS SUBJECT TO OBSERVER
-    this.subject = new EventEmitter();
     // CONNECT BOT CONTROLLER WITH DATABASE
-    this.database = new Database(this.subject);
+    this.database = Database; // JUST INIT THE CONSTRUCTOR
 
     // STARTS NEW BOT
     this.bot = new Telegraf(token, options);
     // BOT MIDDLEWARES BEFORE START POLLING
-    this.bot.use(new UpdatesListener(this.database, this.subject));
-    this.bot.use(new Group(this.database, this.subject));
-    this.bot.use(new Private(this.database, this.subject));
+    this.bot.use(InlineKeyboardListener);
+    this.bot.use(Group);
+    this.bot.use(Private);
 
     this.bot.startPolling();
 

@@ -1,25 +1,24 @@
 import Composer from 'telegraf';
 import AddRemove from './AddRemove';
 
-import GroupManagerController from '../../controllers/GroupManagerController';
+import EventEmitter from '../../../store/EventEmitter';
 
-export default class GroupListener extends Composer {
-  constructor(database, subject) {
+class GroupListener extends Composer {
+  constructor() {
     super();
-    this.subject = subject;
-    this.database = database;
+    this.subject = EventEmitter;
 
-    this.use(new AddRemove(database, subject));
+    this.use(AddRemove);
     this.on('group_chat_created', this.newChat.bind(this));
-    this.on('migrate_from_chat_id', this.migrate.bind(this));
+    this.on('migrate_from_chat_id', this.migrateGroupEvent.bind(this));
     this.on('message', this.messageListener.bind(this));
   }
 
-  async migrate(context, next) {
+  async migrateGroupEvent(context, next) {
     const { migrate_from_chat_id } = await context.message;
     const { id, title } = await context.message.chat;
     try {
-      await this.subject.notify('updateMigrateGroup', {
+      this.subject.notify('updateMigrateGroup', {
         oldTgId: migrate_from_chat_id,
         newTgId: id,
         name: title,
@@ -41,21 +40,23 @@ export default class GroupListener extends Composer {
     } = await context.message;
     try {
       if (new_chat_title) {
-        await this.subject.notify('updateTitleGroup', {
+        this.subject.notify('updateTitleGroup', {
           chatId: chat.id,
           title: new_chat_title,
         });
       }
+
       if (
         'left_chat_member' in context.message ||
         'left_chat_member' in context.update.message
       ) {
-        await this.subject.notify('leftChatMember', {
+        this.subject.notify('leftChatMember', {
           chatId: chat.id,
           userTgId: left_chat_member.id,
           context,
         });
       }
+
       if (reply_to_message) {
         const [botText] = reply_to_message.text.split('\n');
         if (botText === 'Configuração de API') {
@@ -82,12 +83,12 @@ export default class GroupListener extends Composer {
     const { chat, from } = context.message;
 
     try {
-      await this.subject.notify('newChat', {
+      this.subject.notify('newChat', {
         groupTgId: chat.id,
         groupName: chat.title,
         adminTgId: from.id,
       });
-      await this.subject.notify('updateUserRole', {
+      this.subject.notify('updateUserRole', {
         userId: null,
         tgId: from.id,
         role: 8,
@@ -99,3 +100,5 @@ export default class GroupListener extends Composer {
     return next();
   }
 }
+
+export default new GroupListener();

@@ -2,18 +2,19 @@ import Composer from 'telegraf';
 
 import { warn } from '../../../../Utils/groupUtils';
 
-export default class FloodMessage extends Composer {
-  constructor(database) {
+import RuleMethods from '../../../../database/methods/Rule';
+
+class FloodMessage extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
     this.floods = {};
     this.use(this.messageFilter.bind(this));
   }
 
   async messageFilter(context, next) {
     console.log(this.floods);
-    const hasRule = await this.database.ruleMethods.hasThatRule(
+    const hasRule = await RuleMethods.hasThatRule(
       context.message.chat.id,
       'DENY_FLOOD'
     );
@@ -71,13 +72,7 @@ export default class FloodMessage extends Composer {
       this.floods[context.message.from.id].count === 10 ||
       this.floods[context.message.from.id].count >= 17
     ) {
-      await warn(
-        context,
-        this.database,
-        context.message.from.id,
-        1,
-        'Floodando Chat'
-      );
+      await warn(context, context.message.from.id, 1, 'Floodando Chat');
     }
     return next();
   }
@@ -93,3 +88,5 @@ export default class FloodMessage extends Composer {
     return isFlood;
   }
 }
+
+export default new FloodMessage();

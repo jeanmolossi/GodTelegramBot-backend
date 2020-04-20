@@ -1,63 +1,56 @@
 import Composer from 'telegraf/composer';
 
+import UserLevelUtil from '../../../../Utils/UserMethods/UserLevelUtil';
+
 import MemberCommands from './MemberCommands';
 import HelperCommands from './HelperCommands';
 import ModeratorCommands from './ModeratorCommands';
 
-export default class Commands extends Composer {
-  constructor(database, subject) {
+class Commands extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
-    this.levelRole = database.levelRole;
+    this.levelRole = {
+      Default_User: 1,
+      Livre: 2,
+      Helper: 3,
+      SubModerator: 4,
+      Moderator: 5,
+      Administrator: 6,
+      CoFounder: 7,
+      Founder: 8,
+      Dev: 99,
+    };
+
     this.payload = {};
 
-    this.use(
-      Composer.acl(this.useDevCommands.bind(this), new HelperCommands(database))
-    );
+    this.use(Composer.acl(this.useDevCommands.bind(this), HelperCommands));
 
     this.use(
       Composer.acl(
-        this.useFounderCommands.bind(this)
-        // new HelperCommands(database)
+        this.useFounderCommands.bind(this) // HelperCommands
       )
     );
     this.use(
       Composer.acl(
-        this.useCoFounderCommands.bind(this)
-        // new HelperCommands(database)
+        this.useCoFounderCommands.bind(this) // HelperCommands
       )
     );
     this.use(
       Composer.acl(
-        this.useAdministratorCommands.bind(this)
-        // new HelperCommands(database)
+        this.useAdministratorCommands.bind(this) // HelperCommands
       )
     );
     this.use(
-      Composer.acl(
-        this.useModeratorCommands.bind(this),
-        new ModeratorCommands(database)
-      )
+      Composer.acl(this.useModeratorCommands.bind(this), ModeratorCommands)
     );
     this.use(
       Composer.acl(
-        this.useSubModeratorCommands.bind(this)
-        // new HelperCommands(database)
+        this.useSubModeratorCommands.bind(this) // HelperCommands
       )
     );
-    this.use(
-      Composer.acl(
-        this.useHelperCommands.bind(this),
-        new HelperCommands(database)
-      )
-    );
-    this.use(
-      Composer.acl(
-        this.useMemberCommands.bind(this),
-        new MemberCommands(database, subject)
-      )
-    );
+    this.use(Composer.acl(this.useHelperCommands.bind(this), HelperCommands));
+    this.use(Composer.acl(this.useMemberCommands.bind(this), MemberCommands));
   }
 
   /**
@@ -73,7 +66,7 @@ export default class Commands extends Composer {
    * 99 - DEV
    */
 
-  async useMemberCommands(context, next) {
+  async useMemberCommands() {
     const { level } = this.payload;
 
     return !!(
@@ -81,39 +74,39 @@ export default class Commands extends Composer {
     );
   }
 
-  async useHelperCommands(context, next) {
+  async useHelperCommands() {
     const { level } = this.payload;
     return !!(level >= this.levelRole.Helper && level < this.levelRole.Dev);
   }
 
-  async useSubModeratorCommands(context, next) {
+  async useSubModeratorCommands() {
     const { level } = this.payload;
     return !!(
       level >= this.levelRole.SubModerator && level < this.levelRole.Dev
     );
   }
 
-  async useModeratorCommands(context, next) {
+  async useModeratorCommands() {
     const { level } = this.payload;
     return !!(level >= this.levelRole.Moderator && level < this.levelRole.Dev);
   }
 
-  async useAdministratorCommands(context, next) {
+  async useAdministratorCommands() {
     const { level } = this.payload;
     return !!(
       level >= this.levelRole.Administrator && level < this.levelRole.Dev
     );
   }
 
-  async useCoFounderCommands(context, next) {
+  async useCoFounderCommands() {
     const { level } = this.payload;
     return !!(level >= this.levelRole.CoFounder && level < this.levelRole.Dev);
   }
 
   async useFounderCommands(context, next) {
-    const { level } = await this.database.userMethods.userLevel(
-      context.message.from.id
-    );
+    const { level } = await UserLevelUtil.run({
+      userTgId: context.message.from.id,
+    });
     this.payload.level = level;
     return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);
   }
@@ -122,3 +115,5 @@ export default class Commands extends Composer {
     return context.message.from.id === process.env.BOT_DEV_ID;
   }
 }
+
+export default new Commands();

@@ -7,14 +7,16 @@ import UnbanCommand from './UnbanCommand';
 import KickCommand from './KickCommand';
 import PromoteCommand from './PromoteCommand';
 
-export default class AdministratorCommands extends Composer {
-  constructor(database, subject) {
+class AdministratorCommands extends Composer {
+  constructor() {
     super();
-    this.use(new SettingsCommand(database, subject));
-    this.use(new ReloadCommand(database, subject));
-    this.use(new BanCommand(database, subject));
-    this.use(new UnbanCommand(database, subject));
-    this.use(new KickCommand(database, subject));
-    this.use(new PromoteCommand(database, subject));
+    this.use(SettingsCommand);
+    this.use(ReloadCommand);
+    this.use(BanCommand);
+    this.use(UnbanCommand);
+    this.use(KickCommand);
+    this.use(PromoteCommand);
   }
 }
+
+export default new AdministratorCommands();

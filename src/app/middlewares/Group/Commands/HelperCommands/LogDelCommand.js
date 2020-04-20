@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class LogDelCommand extends Composer {
-  constructor(database) {
+class LogDelCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('logdel', this.commandAction.bind(this));
   }
 
@@ -64,3 +63,5 @@ export default class LogDelCommand extends Composer {
     return next();
   }
 }
+
+export default new LogDelCommand();

@@ -2,17 +2,19 @@ import Composer from 'telegraf';
 
 import { warn } from '../../../../Utils/groupUtils';
 
-export default class SpamMessage extends Composer {
-  constructor(database) {
+import RuleMethods from '../../../../database/methods/Rule';
+import SpamMethods from '../../../../database/methods/Spam';
+
+class SpamMessage extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
     this.use(this.messageFilter.bind(this));
   }
 
   async messageFilter(context, next) {
     try {
-      const hasRule = await this.database.ruleMethods.hasThatRule(
+      const hasRule = await RuleMethods.hasThatRule(
         context.message.chat.id,
         'DENY_SPAM'
       );
@@ -28,23 +30,12 @@ export default class SpamMessage extends Composer {
         words = context.message.caption.split(' ');
       }
 
-      if (
-        !(await this.database.spamMethods.hasSpam(
-          context.message.chat.id,
-          words
-        ))
-      ) {
+      if (!(await SpamMethods.hasSpam(context.message.chat.id, words))) {
         return next();
       }
 
       if (
-        (await warn(
-          context,
-          this.database,
-          context.message.from.id,
-          1,
-          'Enviou SPAM!'
-        )) > 0
+        (await warn(context, context.message.from.id, 1, 'Enviou SPAM!')) > 0
       ) {
         await context.deleteMessage();
       }
@@ -54,3 +45,5 @@ export default class SpamMessage extends Composer {
     return next();
   }
 }
+
+export default new SpamMessage();

@@ -1,5 +1,7 @@
 import Extra from 'telegraf/extra';
 
+import EventEmitter from '../../store/EventEmitter';
+
 import User from '../../app/models/User';
 import Group from '../../app/models/Group';
 import Product from '../../app/models/Product';
@@ -7,10 +9,9 @@ import Config from '../../app/models/Config';
 
 import { isProduct } from '../../Utils/monetizzeUtils';
 
-export default class ProductMethods {
-  constructor(subject) {
-    this.methods = this;
-    this.subject = subject;
+class ProductMethods {
+  constructor() {
+    this.subject = EventEmitter;
 
     this.subject.subscribe('setProductGroup', this.setProductGroup.bind(this));
     this.subject.subscribe('productAdd', this.productAdd.bind(this));
@@ -87,3 +88,5 @@ export default class ProductMethods {
     );
   }
 }
+
+export default new ProductMethods();

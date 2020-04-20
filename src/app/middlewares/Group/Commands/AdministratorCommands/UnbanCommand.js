@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class UnbanCommand extends Composer {
-  constructor(database) {
+class UnbanCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('unban', this.commandAction.bind(this));
   }
 
@@ -31,3 +30,5 @@ export default class UnbanCommand extends Composer {
     return next();
   }
 }
+
+export default new UnbanCommand();

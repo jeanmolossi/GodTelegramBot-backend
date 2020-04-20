@@ -1,11 +1,11 @@
 import Spam from '../../app/models/Spam';
 import Group from '../../app/models/Group';
 
-export default class SpamMethods {
-  constructor(subject) {
-    this.subject = subject;
+import EventEmitter from '../../store/EventEmitter';
 
-    // this.subject.subscribe('apiConfig', this.apiConfig.bind(this));
+class SpamMethods {
+  constructor() {
+    this.subject = EventEmitter;
 
     return this;
   }
@@ -154,3 +154,5 @@ export default class SpamMethods {
   //   }
   // }
 }
+
+export default new SpamMethods();

@@ -2,10 +2,12 @@ import Composer from 'telegraf/composer';
 
 import PromoteCommand from './PromoteCommand';
 
-export default class CoFounderCommands extends Composer {
-  constructor(database, subject) {
+class CoFounderCommands extends Composer {
+  constructor() {
     super();
 
-    this.use(new PromoteCommand(database, subject));
+    this.use(PromoteCommand);
   }
 }
+
+export default new CoFounderCommands();

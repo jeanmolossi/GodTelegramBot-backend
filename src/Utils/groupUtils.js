@@ -1,3 +1,6 @@
+import WarnService from '../services/WarnService';
+import ParentChildService from '../services/ParentChildService';
+
 async function warnable(context, id) {
   try {
     const { status } = await context.telegram.getChatMember(
@@ -44,19 +47,26 @@ async function memberInfo(context, chatid, userid) {
   return user;
 }
 
-export async function warn(context, database, id, number, text) {
+export async function warn(context, id, number, text) {
   if (!(await warnable(context, id))) {
     return 0;
   }
 
-  let warns = await database.warnMethods.getWarns(context.message.chat.id, id);
+  let warns = await WarnService.getWarnsRun({
+    groupTgId: context.message.chat.id,
+    userTgId: id,
+  });
   if (!warns) {
     warns = 0;
   }
 
   warns = increase(warns, number);
   console.log('Setting warns: ', warns);
-  await database.warnMethods.setWarns(context.message.chat.id, id, warns);
+  await WarnService.setWarnsRun({
+    groupTgId: context.message.chat.id,
+    userTgId: id,
+    warnsNum: warns,
+  });
 
   const { first_name } = await memberInfo(context, context.message.chat.id, id);
   await context.replyWithMarkdown(
@@ -71,24 +81,31 @@ export async function warn(context, database, id, number, text) {
       return 1;
     }
 
-    const parent_id = await database.warnMethods.getParent(
-      context.message.chat.id,
-      id
-    );
+    const parent_id = await ParentChildService.getParentRun({
+      groupTgId: context.message.chat.id,
+      childTgId: id,
+    });
     if (parent_id !== null && parent_id !== id) {
-      return 1 + (await warn(context, database, parent_id, 1, 'Criança má!'));
+      return 1 + (await warn(context, parent_id, 1, 'Criança má!'));
     }
   }
 
   return 1;
 }
 
-export async function unwarn(context, database, id, number, text) {
-  let warns = await database.warnMethods.getWarns(context.message.chat.id, id);
+export async function unwarn(context, id, number, text) {
+  let warns = await WarnService.getWarnsRun({
+    groupTgId: context.message.chat.id,
+    userTgId: id,
+  });
   if (!warns) warns = 0;
 
   warns = decrease(warns, number);
-  await database.warnMethods.setWarns(context.message.chat.id, id, warns);
+  await WarnService.setWarnsRun({
+    groupTgId: context.message.chat.id,
+    userTgId: id,
+    warnsNum: warns,
+  });
   const { first_name } = await memberInfo(context, context.message.chat.id, id);
 
   const { permissions, type } = await context.telegram.getChat(

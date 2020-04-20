@@ -1,17 +1,15 @@
 import Composer from 'telegraf/composer';
 
+import SimpleFindUserByTgId from '../../../Utils/UserMethods/SimpleFindUserByTgId';
+
 import Commands from './Commands';
 
-export default class Private extends Composer {
-  constructor(database, subject) {
+class Private extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
-    this.subject = subject;
     this.use(this.privateListener.bind(this));
-    this.use(
-      Composer.acl(this.isPrivate.bind(this), new Commands(database, subject))
-    );
+    this.use(Composer.acl(this.isPrivate.bind(this), Commands));
   }
 
   async isPrivate(context, next) {
@@ -24,9 +22,9 @@ export default class Private extends Composer {
   async privateListener(context, next) {
     if (!context.message) return next();
     if (context.message.chat.type !== 'private') return next();
-    const user = await this.database.userMethods.findUserByTgId(
-      context.message.from.id
-    );
+    const user = await SimpleFindUserByTgId.run({
+      userTgId: context.message.from.id,
+    });
     if (!user) return false;
     if (user.tgPic === null) {
       const profilePic = await context.telegram.getUserProfilePhotos(user.tgId);
@@ -51,3 +49,5 @@ export default class Private extends Composer {
     // await context.telegram.sendPhoto( context.message.from.id, file_id );
   }
 }
+
+export default new Private();

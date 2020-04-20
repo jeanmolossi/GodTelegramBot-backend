@@ -2,10 +2,9 @@ import Composer from 'telegraf/composer';
 
 import {} from 'date-fns';
 
-export default class MuteCommand extends Composer {
-  constructor(database) {
+class MuteCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('mute', this.commandAction.bind(this));
     this.command('unmute', this.commandOppositeAction.bind(this));
   }
@@ -68,3 +67,5 @@ export default class MuteCommand extends Composer {
     return next();
   }
 }
+
+export default new MuteCommand();

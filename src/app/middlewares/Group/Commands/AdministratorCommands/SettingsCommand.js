@@ -1,10 +1,9 @@
 import Composer from 'telegraf/composer';
 import Extra from 'telegraf/extra';
 
-export default class SettingsCommand extends Composer {
-  constructor(database) {
+class SettingsCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('settings', this.commandAction.bind(this));
   }
 
@@ -20,3 +19,5 @@ export default class SettingsCommand extends Composer {
     );
   }
 }
+
+export default new SettingsCommand();

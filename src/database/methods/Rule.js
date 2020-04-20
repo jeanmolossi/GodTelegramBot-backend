@@ -1,9 +1,11 @@
 import Rule from '../../app/models/Rule';
 import Group from '../../app/models/Group';
 
-export default class RuleMethods {
-  constructor(subject) {
-    this.subject = subject;
+import EventEmitter from '../../store/EventEmitter';
+
+class RuleMethods {
+  constructor() {
+    this.subject = EventEmitter;
 
     this.subject.subscribe('setRule', this.setRule.bind(this));
 
@@ -39,7 +41,7 @@ export default class RuleMethods {
     if (!group || group === null) {
       return false;
     }
-    const rules = await group.getRule();
+    const rules = await group.getRules();
 
     return rules;
   }
@@ -51,7 +53,7 @@ export default class RuleMethods {
     if (!group || group === null) {
       return false;
     }
-    const ruleToRemove = await group.removeRule(rule);
+    const ruleToRemove = await group.removeRules(rule);
     return ruleToRemove;
   }
 
@@ -62,11 +64,11 @@ export default class RuleMethods {
     if (!group || group === null) {
       return false;
     }
-    const hasRule = await group.hasRule(rule);
+    const hasRule = await group.hasRules(rule);
     return hasRule;
   }
 
-  async setRule({ ruleId, ruleStats, chatId, userId, context }) {
+  async setRule({ ruleId, ruleStats, chatId }) {
     const ruleType = [
       'NULL_INPUT',
       'DENY_SPAM', // 1
@@ -91,5 +93,8 @@ export default class RuleMethods {
       ruleType[ruleId]
     );
     console.log(removeRule);
+    return true;
   }
 }
+
+export default new RuleMethods();

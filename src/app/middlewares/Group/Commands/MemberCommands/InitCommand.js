@@ -1,9 +1,11 @@
 import Composer from 'telegraf/composer';
 
-export default class InitCommand extends Composer {
-  constructor(database) {
+import EventEmitter from '../../../../../store/EventEmitter';
+
+class InitCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
+    this.subject = EventEmitter;
     this.command('init', this.commandAction.bind(this));
   }
 
@@ -21,13 +23,14 @@ export default class InitCommand extends Composer {
       );
       return next();
     }
-
-    await this.database.groupMethods.findOrCreateGroup({
+    this.subject.notify('newChat', {
       groupTgId: chat.id,
       groupName: chat.title,
       adminTgId: from.id,
     });
-    await context.reply(`Inicializações Ok`);
+    await context.reply(`✅ Inicializações Feitas`);
     return next();
   }
 }
+
+export default new InitCommand();

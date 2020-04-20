@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class GroupLinkCommand extends Composer {
+class GroupLinkCommand extends Composer {
   constructor(database) {
     super();
-    this.database = database;
     this.command('grouplink', this.commandAction.bind(this));
   }
 
@@ -11,3 +10,5 @@ export default class GroupLinkCommand extends Composer {
     await context.reply(`GroupLinkCommand Ok`);
   }
 }
+
+export default new GroupLinkCommand();

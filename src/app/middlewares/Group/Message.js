@@ -13,21 +13,23 @@ import ChatForwardMessage from './Messages/ChatForwardMessage';
 import LinkMessage from './Messages/LinkMessage';
 // import FileMessage from './Messages/FileMessage';
 
-export default class Message extends Composer {
-  constructor(database, subject) {
+class Message extends Composer {
+  constructor() {
     super();
 
     // MESSAGES TYPES
-    this.use(new SpamMessage(database, subject));
-    this.use(new FloodMessage(database, subject));
-    this.use(new BotMessage(database, subject));
+    this.use(SpamMessage);
+    this.use(FloodMessage);
+    this.use(BotMessage);
 
     // FORWARD MESSAGE TYPES
-    this.use(new BotForwardMessage(database, subject));
-    this.use(new ChatForwardMessage(database, subject));
+    this.use(BotForwardMessage);
+    this.use(ChatForwardMessage);
 
     // FILE && LINK MESSAGES RULES
-    this.use(new LinkMessage(database, subject));
+    this.use(LinkMessage);
     // this.use(new FileMessage(database));
   }
 }
+
+export default new Message();

@@ -1,10 +1,10 @@
 import Composer from 'telegraf/composer';
 import Extra from 'telegraf/extra';
 
-export default class FaqCommand extends Composer {
-  constructor(database) {
+class FaqCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
+
     this.command('faq', this.commandAction.bind(this));
   }
 
@@ -24,3 +24,5 @@ export default class FaqCommand extends Composer {
     );
   }
 }
+
+export default new FaqCommand();

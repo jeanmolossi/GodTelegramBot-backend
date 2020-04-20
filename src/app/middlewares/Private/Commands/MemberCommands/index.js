@@ -8,15 +8,17 @@ import MyWarnsCommand from './MyWarnsCommand';
 import FaqCommand from './FaqCommand';
 import MyProductsCommand from './MyProductsCommand';
 
-export default class MemberCommands extends Composer {
-  constructor(database, subject) {
+class MemberCommands extends Composer {
+  constructor() {
     super();
-    this.use(new StartCommand(database, subject));
-    this.use(new MyDataCommand(database, subject));
-    this.use(new GroupLinkCommand(database, subject));
-    this.use(new RegisterCommand(database, subject));
-    this.use(new MyWarnsCommand(database, subject));
-    this.use(new FaqCommand(database, subject));
-    this.use(new MyProductsCommand(database, subject));
+    this.use(StartCommand);
+    this.use(MyDataCommand);
+    this.use(GroupLinkCommand);
+    this.use(RegisterCommand);
+    this.use(MyWarnsCommand);
+    this.use(FaqCommand);
+    this.use(MyProductsCommand);
   }
 }
+
+export default new MemberCommands();

@@ -1,15 +1,17 @@
 import Composer from 'telegraf/composer';
 
-export default class StartCommand extends Composer {
-  constructor(database) {
+import GroupStaffUtil from '../../../../../Utils/GroupMethods/GroupStaffUtil';
+
+class StartCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('staff', this.commandAction.bind(this));
   }
 
   async commandAction(context, next) {
     const { chat } = context.message;
-    const groupStaff = await this.database.groupMethods.findGroupStaff(chat.id);
+    const groupStaff = await GroupStaffUtil.run({ tgId: chat.id });
+
     const staff = groupStaff.map((userStaff) => {
       let role = 'Defaul User';
       switch (userStaff.UserGroup.userRole) {
@@ -40,3 +42,5 @@ export default class StartCommand extends Composer {
       await context.replyWithMarkdown(staff.join('\n\n'));
   }
 }
+
+export default new StartCommand();

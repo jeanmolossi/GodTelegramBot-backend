@@ -1,17 +1,18 @@
 import Composer from 'telegraf';
 import { warn } from '../../../../Utils/groupUtils';
 
-export default class BotMessage extends Composer {
-  constructor(database) {
+import RuleMethods from '../../../../database/methods/Rule';
+
+class BotMessage extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
     this.use(this.messageFilter.bind(this));
   }
 
   async messageFilter(context, next) {
     const { chat, from } = context.message;
-    if (!(await this.database.ruleMethods.hasThatRule(chat.id, 'DENY_BOT'))) {
+    if (!(await RuleMethods.hasThatRule(chat.id, 'DENY_BOT'))) {
       return next();
     }
 
@@ -19,10 +20,10 @@ export default class BotMessage extends Composer {
       return next();
     }
 
-    if (
-      (await warn(context, this.database, from.id, 3, 'Bot mensageiro')) > 0
-    ) {
+    if ((await warn(context, from.id, 3, 'Bot mensageiro')) > 0) {
       await context.deleteMessage();
     }
   }
 }
+
+export default new BotMessage();

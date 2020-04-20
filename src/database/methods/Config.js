@@ -1,10 +1,11 @@
 import User from '../../app/models/User';
 import Config from '../../app/models/Config';
 
-export default class ConfigMethods {
-  constructor(subject) {
-    this.methods = this;
-    this.subject = subject;
+import EventEmitter from '../../store/EventEmitter';
+
+class ConfigMethods {
+  constructor() {
+    this.subject = EventEmitter;
 
     this.subject.subscribe('apiConfig', this.apiConfig.bind(this));
 
@@ -43,3 +44,5 @@ export default class ConfigMethods {
     return false;
   }
 }
+
+export default new ConfigMethods();

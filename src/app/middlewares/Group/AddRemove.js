@@ -2,22 +2,30 @@ import Composer from 'telegraf';
 
 import { warn } from '../../../Utils/groupUtils';
 
-export default class AddRemove extends Composer {
-  constructor(database, subject) {
+import ParentChildService from '../../../services/ParentChildService';
+import UpdateGroupInfoService from '../../../services/UpdateGroupInfoService';
+import FindOrCreateGroupService from '../../../services/FindOrCreateGroupService';
+
+import FindLevelByGroupUtil from '../../../Utils/GroupMethods/FindLevelByGroupUtil';
+import FullUserBuyCatalogUtil from '../../../Utils/UserMethods/FullUserBuyCatalogUtil';
+
+import EventEmitter from '../../../store/EventEmitter';
+
+class AddRemove extends Composer {
+  constructor() {
     super();
 
-    this.subject = subject;
-    this.database = database;
+    this.subject = EventEmitter;
     this.on('new_chat_members', this.adds.bind(this));
     return this;
   }
 
   async adds(context, next) {
     // console.log(context, 'ADDS CONTEXT');
-    const allUser = await this.database.groupMethods.findLevelUserByGroup(
-      context.update.message.chat.id,
-      context.update.message.from.id
-    );
+    const allUser = await FindLevelByGroupUtil.run({
+      tgId: context.update.message.chat.id,
+      userTgId: context.update.message.from.id,
+    });
     const { Users } = allUser || { Users: null };
     const { userRole } = Users !== null ? Users[0].UserGroup : 0;
     const level = userRole;
@@ -44,9 +52,9 @@ export default class AddRemove extends Composer {
       return false;
     }
 
-    const isClient = await this.database.userMethods.findUserCompleteByTgId(
-      member.id
-    );
+    const isClient = await FullUserBuyCatalogUtil.run({
+      userTgId: member.id,
+    });
 
     const { chat, from } = context.update.message;
     if (isClient === null || !isClient.Buys || isClient.Buys.length <= 0) {
@@ -58,8 +66,15 @@ export default class AddRemove extends Composer {
       return false;
     }
 
-    await this.database.warnMethods.setParent(chat.id, member.id, from.id);
-    await this.database.groupMethods.updateGroupUserCount(chat.id, context);
+    await ParentChildService.setParentRun({
+      groupTgId: chat.id,
+      childTgId: member.id,
+      parentTgId: from.id,
+    });
+    await UpdateGroupInfoService.userCountGroupRun({
+      groupTgId: chat.id,
+      context,
+    });
 
     return true;
   }
@@ -89,7 +104,6 @@ export default class AddRemove extends Composer {
       );
       await warn(
         context,
-        this.database,
         context.message.from.id,
         1,
         'Adicionou um bot ao grupo'
@@ -105,7 +119,10 @@ export default class AddRemove extends Composer {
       return false;
     }
     const { id, title } = await context.message.chat;
-    await this.database.groupMethods.findOrCreateGroup(id, title);
+    await FindOrCreateGroupService.run({
+      groupTgId: id,
+      groupName: title,
+    });
 
     await context.replyWithMarkdown(`
 Obrigado amigo! [@${context.message.from.first_name}](tg://user?id=${context.message.from.id})!
@@ -137,8 +154,15 @@ Você sempre foi o melhor!
     }
     const { chat, from } = context.update.message;
     try {
-      await this.database.warnMethods.setParent(chat.id, member.id, from.id);
-      await this.database.groupMethods.updateGroupUserCount(chat.id, context);
+      await ParentChildService.setParentRun({
+        groupTgId: chat.id,
+        childTgId: member.id,
+        parentTgId: from.id,
+      });
+      await UpdateGroupInfoService.userCountGroupRun({
+        groupTgId: chat.id,
+        context,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -146,3 +170,5 @@ Você sempre foi o melhor!
     return true;
   }
 }
+
+export default new AddRemove();

@@ -3,10 +3,9 @@ import Extra from 'telegraf/extra';
 
 import { warn } from '../../../../../Utils/groupUtils';
 
-export default class WarnCommand extends Composer {
-  constructor(database) {
+class WarnCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('warn', this.commandAction.bind(this));
   }
 
@@ -22,7 +21,6 @@ export default class WarnCommand extends Composer {
       try {
         await warn(
           context,
-          this.database,
           context.message.reply_to_message.from.id,
           number,
           'Comando de administrador ou acima'
@@ -44,3 +42,5 @@ export default class WarnCommand extends Composer {
     return next();
   }
 }
+
+export default new WarnCommand();

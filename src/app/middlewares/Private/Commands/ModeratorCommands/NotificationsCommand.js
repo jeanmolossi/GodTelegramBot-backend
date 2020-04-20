@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class NotificationsCommand extends Composer {
-  constructor(database) {
+class NotificationsCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('notifications', this.commandAction.bind(this));
   }
 
@@ -11,3 +10,5 @@ export default class NotificationsCommand extends Composer {
     await context.reply(`NotificationsCommand Ok`);
   }
 }
+
+export default new NotificationsCommand();

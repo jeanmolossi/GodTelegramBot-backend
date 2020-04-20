@@ -1,7 +1,10 @@
 import Composer from 'telegraf/composer';
 
-export default class DevCommands extends Composer{
-  constructor(database){
+class DevCommands extends Composer {
+  constructor() {
     super();
+    return this;
   }
 }
+
+export default new DevCommands();

@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class MyProductsCommand extends Composer {
-  constructor(database) {
+class MyProductsCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('myproducts', this.commandAction.bind(this));
   }
 
@@ -11,3 +10,5 @@ export default class MyProductsCommand extends Composer {
     await context.reply(`MyProductsCommand Ok`);
   }
 }
+
+export default new MyProductsCommand();

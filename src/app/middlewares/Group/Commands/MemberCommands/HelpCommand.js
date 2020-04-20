@@ -1,18 +1,23 @@
 import Composer from 'telegraf/composer';
 import Markup from 'telegraf/markup';
 
-export default class HelpCommand extends Composer {
-  constructor(database) {
+import FindLevelByGroupUtil from '../../../../../Utils/GroupMethods/FindLevelByGroupUtil';
+
+class HelpCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('help', this.commandAction.bind(this));
   }
 
   async commandAction(context, next) {
-    const { Users } = await this.database.groupMethods.findLevelUserByGroup(
-      context.message.chat.id,
-      context.message.from.id
-    );
+    const { Users } =
+      (await FindLevelByGroupUtil.run({
+        tgId: context.message.chat.id,
+        userTgId: context.message.from.id,
+      })) || null;
+
+    if (Users === null) return next();
+
     const { userRole } = Users[0].UserGroup;
     await context.reply(`Vem de PV ;)`);
     if (userRole >= 3) {
@@ -96,3 +101,5 @@ export default class HelpCommand extends Composer {
     );
   }
 }
+
+export default new HelpCommand();

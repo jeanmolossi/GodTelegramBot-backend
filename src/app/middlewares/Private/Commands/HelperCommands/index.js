@@ -1,8 +1,10 @@
 import Composer from 'telegraf/composer';
 
-export default class HelperCommands extends Composer {
-  constructor(database) {
+class HelperCommands extends Composer {
+  constructor() {
     super();
-    // this.use(new CommandName(database));
+    return this;
   }
 }
+
+export default new HelperCommands();

@@ -1,32 +1,36 @@
 import Composer from 'telegraf/composer';
 
+import UserLevelByGroupService from '../../../services/UserLevelByGroupService';
+
 import Commands from './Commands';
 import GroupListener from './GroupListener';
 import Message from './Message';
 
-export default class Group extends Composer {
-  constructor(database, subject) {
+class Group extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
-    this.use(
-      Composer.acl(
-        this.isGroup.bind(this),
-        new GroupListener(database, subject)
-      )
-    );
-    this.use(
-      Composer.acl(this.isGroup.bind(this), new Commands(database, subject))
-    );
-    this.use(
-      Composer.acl(this.isGroup.bind(this), new Message(database, subject))
-    );
+    this.use(Composer.acl(this.isGroup.bind(this), GroupListener));
+    this.use(Composer.acl(this.isGroup.bind(this), Commands));
+    this.use(Composer.acl(this.isGroup.bind(this), Message));
   }
 
   async isGroup(context, next) {
     if (context.message && context.message.chat.type !== 'private') {
-      return true;
+      if (!(await this.applicableFilterUser(context))) {
+        return true;
+      }
+      return false;
     }
     return false;
   }
+
+  async applicableFilterUser(context) {
+    const utilRunner = await UserLevelByGroupService.run({
+      context,
+    });
+    return utilRunner;
+  }
 }
+
+export default new Group();

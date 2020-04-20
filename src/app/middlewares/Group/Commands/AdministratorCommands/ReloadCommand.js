@@ -1,10 +1,11 @@
 import Composer from 'telegraf/composer';
 
-export default class ReloadCommand extends Composer {
-  constructor(database, subject) {
+import EventEmitter from '../../../../../store/EventEmitter';
+
+class ReloadCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
-    this.subject = subject;
+    this.subject = EventEmitter;
     this.command('reload', this.commandAction.bind(this));
   }
 
@@ -34,3 +35,5 @@ export default class ReloadCommand extends Composer {
     return next();
   }
 }
+
+export default new ReloadCommand();

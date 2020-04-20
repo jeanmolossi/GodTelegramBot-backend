@@ -1,11 +1,11 @@
 import Composer from 'telegraf/composer';
 import Extra from 'telegraf/extra';
 
-export default class RegisterCommand extends Composer {
-  constructor(database, subject) {
+import RegisterSyncBuyService from '../../../../../services/RegisterSyncBuyService';
+
+class RegisterCommand extends Composer {
+  constructor() {
     super();
-    this.subject = subject;
-    this.database = database;
 
     this.dados = {
       email: null,
@@ -89,7 +89,7 @@ export default class RegisterCommand extends Composer {
       }
       this.dados.productId = productId;
       const dados = `${this.dados.email}\nCompra: ${this.dados.vendacodigo}\nProduto: ${productId}`;
-      await context.reply(
+      await pCtx.reply(
         `Verifique seus dados:\n${dados}\nSe estiver tudo correto toque no comando abaixo:\n/registrocompleto`
       );
       return true;
@@ -98,12 +98,9 @@ export default class RegisterCommand extends Composer {
       if (this.dados.email !== null && this.dados.vendacodigo !== null) {
         this.dados.tgId = trdCtx.message.from.id;
         try {
-          const userValid = await this.database.userMethods.registerComplete(
-            this.dados
-          );
+          const userValid = await RegisterSyncBuyService.run(this.dados);
           if (userValid) {
-            // this.subject.notify('RegisterComplete', this.dados);
-            await context.reply(
+            await trdCtx.reply(
               `Obrigado. Enviei seus dados para registro.\n` +
                 `Agora, nossa equipe irá confirmar seus dados.\n` +
                 `Aguarde cerca de 5 minutos. Não deve demorar mais que isso\n\n` +
@@ -112,19 +109,23 @@ export default class RegisterCommand extends Composer {
             );
             return true;
           }
-          await context.reply(`Dados não encontrados na API`);
+          await trdCtx.reply(
+            `Dados não encontrados na API, verifique se as informações estão corretas`
+          );
           return false;
         } catch (error) {
-          await context.reply(
+          await trdCtx.reply(
             `Algo saiu errado, não foi possível concluir seu registro`
           );
           return false;
         }
       } else {
-        await context.reply(`Os dados não foram enviados corretamente`);
+        await trdCtx.reply(`Os dados não foram enviados corretamente`);
       }
       return false;
     });
     return next();
   }
 }
+
+export default new RegisterCommand();

@@ -1,10 +1,11 @@
 import Composer from 'telegraf/composer';
 
-export default class InfoCommand extends Composer {
-  constructor(database, subject) {
+import EventEmitter from '../../../../../store/EventEmitter';
+
+class InfoCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
-    this.subject = subject;
+    this.subject = EventEmitter;
     this.command('info', this.commandAction.bind(this));
   }
 
@@ -27,3 +28,5 @@ export default class InfoCommand extends Composer {
     return next();
   }
 }
+
+export default new InfoCommand();

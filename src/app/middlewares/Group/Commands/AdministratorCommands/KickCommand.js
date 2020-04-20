@@ -1,9 +1,8 @@
 import Composer from 'telegraf/composer';
 
-export default class KickCommand extends Composer {
-  constructor(database) {
+class KickCommand extends Composer {
+  constructor() {
     super();
-    this.database = database;
     this.command('kick', this.commandAction.bind(this));
   }
 
@@ -29,3 +28,4 @@ export default class KickCommand extends Composer {
     return next();
   }
 }
+export default new KickCommand();

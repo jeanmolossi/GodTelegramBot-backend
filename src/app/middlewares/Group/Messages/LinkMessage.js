@@ -1,11 +1,12 @@
 import Composer from 'telegraf';
 import { warn } from '../../../../Utils/groupUtils';
 
-export default class LinkMessage extends Composer {
-  constructor(database) {
+import RuleMethods from '../../../../database/methods/Rule';
+
+class LinkMessage extends Composer {
+  constructor() {
     super();
 
-    this.database = database;
     this.use(this.messageFilter.bind(this));
   }
 
@@ -13,7 +14,7 @@ export default class LinkMessage extends Composer {
     const { chat, from } = context.message;
     let regexes = [];
     try {
-      regexes = (await this.database.ruleMethods.getGroupRules(chat.id))
+      regexes = (await RuleMethods.getGroupRules(chat.id))
         .map((rule) => rule.type)
         .filter((rule) => rule.includes('DENY_LINK_'))
         .map((rule) => rule.replace('DENY_LINK_', ''))
@@ -27,7 +28,7 @@ export default class LinkMessage extends Composer {
     for (const url of urls) {
       for (const regex of regexes) {
         if (regex.test(url)) {
-          if (warn(context, this.database, from.id, 1, 'Enviando links') > 0) {
+          if (warn(context, from.id, 1, 'Enviando links') > 0) {
             await context.deleteMessage();
           }
           return;
@@ -50,3 +51,4 @@ export default class LinkMessage extends Composer {
     return url;
   }
 }
+export default new LinkMessage();
