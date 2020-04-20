@@ -34,6 +34,8 @@ export default class AddRemove extends Composer {
         await this.add_me.call(this, context, member);
       }
     }
+    const chatId = context.update.message.chat.id;
+    this.subject.notify('newChatMember', { chatId, context });
     return next();
   }
 

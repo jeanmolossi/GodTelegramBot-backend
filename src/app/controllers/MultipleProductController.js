@@ -9,7 +9,12 @@ class MultipleProductController {
         {
           model: Product,
           where: { productActive: true },
-          attributes: ['productName', 'productId', 'productActive'],
+          attributes: [
+            'productName',
+            'productId',
+            'productActive',
+            'productMonetizze',
+          ],
         },
       ],
     });

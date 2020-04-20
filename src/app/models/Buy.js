@@ -1,5 +1,7 @@
 import Sequelize, { Model } from 'sequelize';
 
+import { addMonths, parseISO, format } from 'date-fns';
+
 class Buy extends Model {
   static init(sequelize) {
     super.init(
@@ -10,11 +12,30 @@ class Buy extends Model {
         signStatus: Sequelize.STRING,
         signDate: Sequelize.DATE,
         signType: Sequelize.STRING,
+        signPlanPeriod: Sequelize.STRING,
+        signUntil: Sequelize.DATE,
       },
       {
         sequelize,
       }
     );
+    this.addHook('beforeSave', (buy) => {
+      const plans = [
+        'Mensal',
+        'Bimestral',
+        'Trimestral',
+        'Semestral',
+        'Anual',
+        'Trienal',
+      ];
+      const monthsToAddByPlan = [1, 2, 3, 6, 12, 36];
+      const selector = plans.indexOf(buy.signPlanPeriod);
+      const monthstoAdd = monthsToAddByPlan[selector];
+      const formatDate = parseISO(
+        format(addMonths(buy.signDate, monthstoAdd), "yyyy-MM-dd'T'HH:mm:ssxxx")
+      );
+      buy.signUntil = formatDate;
+    });
     return this;
   }
 

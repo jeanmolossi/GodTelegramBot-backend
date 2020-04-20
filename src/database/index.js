@@ -4,6 +4,7 @@ import database from '../config/database';
 
 import User from '../app/models/User';
 import Group from '../app/models/Group';
+import GroupManager from '../app/models/GroupManager';
 import UserGroup from '../app/models/UserGroup';
 import Buy from '../app/models/Buy';
 import Product from '../app/models/Product';
@@ -24,6 +25,7 @@ import SpamMethods from './methods/Spam';
 const models = [
   User,
   Group,
+  GroupManager,
   UserGroup,
   Buy,
   Product,

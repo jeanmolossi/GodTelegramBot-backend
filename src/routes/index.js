@@ -5,6 +5,10 @@ import UserController from '../app/controllers/UserController';
 import ConfigController from '../app/controllers/ConfigController';
 import ProductController from '../app/controllers/ProductController';
 import MultipleProductController from '../app/controllers/MultipleProductController';
+import BuyController from '../app/controllers/BuyController';
+import GroupController from '../app/controllers/GroupController';
+import NotificationController from '../app/controllers/NotificationController';
+import GroupManagerController from '../app/controllers/GroupManagerController';
 
 import authMiddleware from '../app/middlewares/auth';
 
@@ -42,5 +46,30 @@ routes.put('/product/:id', ProductController.update);
 routes.delete('/product/:id', ProductController.delete);
 
 routes.get('/products', MultipleProductController.index);
+
+// SINGLE BUYS ROUTE BY LOGGED USER
+
+routes.get('/user/buys', BuyController.index);
+routes.get('/user/buy/:id', BuyController.index);
+routes.post('/user/buys', BuyController.storeSync);
+routes.post('/user/buy/add', BuyController.storeRegister);
+
+routes.get('/user/sell', BuyController.indexSell);
+
+// GROUPS ROUTES
+
+routes.get('/groups', GroupController.index);
+routes.put('/group/:id', GroupController.update);
+routes.delete('/group/:id', GroupController.delete);
+
+// NOTIFICATIONS ROUTES
+
+routes.get('/notifications', NotificationController.index);
+routes.post('/notification', NotificationController.store);
+routes.put('/notification/:id', NotificationController.update);
+
+// GROUP REPORT MANAGER
+
+routes.get('/group/:id/report', GroupManagerController.index);
 
 export default routes;

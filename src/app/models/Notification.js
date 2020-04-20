@@ -8,7 +8,6 @@ class Notification extends Model {
         text: Sequelize.TEXT,
         read: { type: Sequelize.BOOLEAN, defaultValue: false },
         method: Sequelize.STRING,
-        from: Sequelize.STRING,
       },
       { sequelize }
     );
@@ -16,7 +15,8 @@ class Notification extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'tgId', as: 'to' });
+    this.belongsTo(models.User, { foreignKey: 'toId', as: 'to' });
+    this.belongsTo(models.User, { foreignKey: 'fromId', as: 'from' });
   }
 }
 

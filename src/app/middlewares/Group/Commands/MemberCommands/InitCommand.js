@@ -24,7 +24,7 @@ export default class InitCommand extends Composer {
 
     await this.database.groupMethods.findOrCreateGroup({
       groupTgId: chat.id,
-      groupName: null,
+      groupName: chat.title,
       adminTgId: from.id,
     });
     await context.reply(`Inicializações Ok`);

@@ -106,6 +106,7 @@ class UserMethods {
         signStatus: transaction.assinatura.status || 'Inexistente',
         signDate: transaction.assinatura.data_assinatura || new Date(),
         signType: 'Syncronizada',
+        signPlanPeriod: transaction.plano.periodicidade,
       };
     }
     try {
@@ -125,6 +126,7 @@ class UserMethods {
       const newBuy = await Buy.create(buyFormat);
       await newBuy.setUser(userRegister);
       await newBuy.setProduct(product);
+      await product.addBuy(newBuy);
       await userRegister.addBuy(newBuy, { through: 'UserBuys' });
     } catch (error) {
       console.log('Error: ', error);

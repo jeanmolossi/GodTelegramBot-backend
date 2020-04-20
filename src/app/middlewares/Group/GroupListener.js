@@ -1,6 +1,8 @@
 import Composer from 'telegraf';
 import AddRemove from './AddRemove';
 
+import GroupManagerController from '../../controllers/GroupManagerController';
+
 export default class GroupListener extends Composer {
   constructor(database, subject) {
     super();

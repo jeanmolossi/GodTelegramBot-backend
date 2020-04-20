@@ -11,7 +11,12 @@ class ProductController {
     const { id } = req.params;
     const product = await Product.findOne({
       where: { id, productActive: true },
-      attributes: ['productName', 'productActive', 'productId'],
+      attributes: [
+        'productName',
+        'productActive',
+        'productId',
+        'productMonetizze',
+      ],
       include: [{ model: User, attributes: ['id', 'name', 'email'] }],
     });
     if (!(product && product.User && product.User.id === req.userId))
@@ -90,6 +95,7 @@ class ProductController {
 
     const { productName } = req.body;
     await product.update({ productName });
+    await product.setUser(req.userId);
 
     return res.json({ productName });
   }

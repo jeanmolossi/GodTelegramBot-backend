@@ -4,10 +4,14 @@ import UserGroup from '../../app/models/UserGroup';
 import Buy from '../../app/models/Buy';
 import ParentChild from '../../app/models/ParentChildInGroup';
 
+import GroupManagerController from '../../app/controllers/GroupManagerController';
+
 class GroupMethods {
   constructor(subject) {
     this.methods = this;
     this.subject = subject;
+
+    this.manager = GroupManagerController;
 
     this.subject.subscribe(
       'updateMigrateGroup',
@@ -19,6 +23,7 @@ class GroupMethods {
     );
     this.subject.subscribe('newChat', this.findOrCreateGroup.bind(this));
     this.subject.subscribe('leftChatMember', this.leftChatMember.bind(this));
+    this.subject.subscribe('newChatMember', this.newChatMember.bind(this));
 
     return this;
   }
@@ -104,6 +109,7 @@ class GroupMethods {
       },
     });
     await this.updateGroupUserCount.call(this, chatId, context);
+    await this.manager.decrementUser.call(this, chatId, context);
     const user = await User.findByTgId(userTgId);
     if (user) {
       await UserGroup.destroy({ where: { UserId: user.id } });
@@ -116,6 +122,10 @@ class GroupMethods {
         });
       }
     }
+  }
+
+  async newChatMember({ chatId, context }) {
+    await this.manager.incrementUser.call(this, chatId, context);
   }
 
   async findGroupByTgId(tgId) {
