@@ -12,6 +12,7 @@ class ChatForwardMessage extends Composer {
 
   async messageFilter(context, next) {
     const { chat, from } = context.message;
+    if (!context.message) return next();
     if (!(await RuleMethods.hasThatRule(chat.id, 'DENY_CHAT_FORWARD'))) {
       return next();
     }

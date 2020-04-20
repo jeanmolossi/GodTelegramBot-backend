@@ -14,6 +14,7 @@ class FloodMessage extends Composer {
 
   async messageFilter(context, next) {
     console.log(this.floods);
+    if (!context.message) return next();
     const hasRule = await RuleMethods.hasThatRule(
       context.message.chat.id,
       'DENY_FLOOD'

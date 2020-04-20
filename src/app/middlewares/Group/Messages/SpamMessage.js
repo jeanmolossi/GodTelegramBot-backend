@@ -15,7 +15,8 @@ class SpamMessage extends Composer {
   async messageFilter(context, next) {
     try {
       const { message } = context;
-      console.log(message, context.update);
+      if (!message) return next();
+
       const hasRule = await RuleMethods.hasThatRule(
         context.message.chat.id,
         'DENY_SPAM'

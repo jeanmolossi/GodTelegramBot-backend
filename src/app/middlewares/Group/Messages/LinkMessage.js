@@ -12,6 +12,7 @@ class LinkMessage extends Composer {
 
   async messageFilter(context, next) {
     const { chat, from } = context.message;
+    if (!context.message) return next();
     let regexes = [];
     try {
       regexes = (await RuleMethods.getGroupRules(chat.id))
