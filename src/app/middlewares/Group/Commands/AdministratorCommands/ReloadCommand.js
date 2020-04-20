@@ -23,7 +23,7 @@ class ReloadCommand extends Composer {
       } else {
         await context.reply(`✅ Parece que está tudo configurado!`);
       }
-      await this.subject.notify('newChat', {
+      this.subject.notify('newChat', {
         groupTgId: message.chat.id,
         groupName: message.chat.title,
         adminTgId: message.from.id,

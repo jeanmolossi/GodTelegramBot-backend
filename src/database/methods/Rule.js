@@ -84,7 +84,7 @@ class RuleMethods {
         chatId,
         ruleType[ruleId]
       );
-      console.log(addRule);
+      // console.log(addRule);
       return true;
     }
     const removeRule = await this.removeGroupRule.call(
@@ -92,7 +92,7 @@ class RuleMethods {
       chatId,
       ruleType[ruleId]
     );
-    console.log(removeRule);
+    // console.log(removeRule);
     return true;
   }
 }

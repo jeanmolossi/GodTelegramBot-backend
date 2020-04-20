@@ -12,7 +12,6 @@ class FindLevelByGroupUtil {
         },
       ],
     });
-    console.log(group);
     if (!group || group === null) {
       return null;
     }
