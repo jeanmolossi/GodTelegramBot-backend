@@ -1,7 +1,9 @@
 import Composer from 'telegraf/composer';
 import Markup from 'telegraf/markup';
+import Extra from 'telegraf/extra';
 
 import FindLevelByGroupUtil from '../../../../../Utils/GroupMethods/FindLevelByGroupUtil';
+import SimpleFindUserByTgId from '../../../../../Utils/UserMethods/SimpleFindUserByTgId';
 
 class HelpCommand extends Composer {
   constructor() {
@@ -18,14 +20,30 @@ class HelpCommand extends Composer {
       tgId: chat.id,
       userTgId: from.id,
     });
-    console.log(allUser);
-    if (allUser !== null) Users = allUser.Users;
-    console.log(Users);
-    console.log(context.message);
-    if (Users === null) return next();
+
+    if (allUser === null) {
+      Users = [
+        await SimpleFindUserByTgId.run({
+          userTgId: from.id,
+        }),
+      ];
+    } else {
+      Users = allUser.Users;
+    }
+
+    if (Users === null || Users.length <= 0 || Users[0].UserGroup === undefined)
+      return next();
 
     const { userRole } = Users[0].UserGroup;
-    await context.reply(`Vem de PV ;)`);
+    await context.reply(
+      `Vem de PV ;)`,
+      Extra.markup((m) =>
+        m
+          .keyboard([['/help', '/staff']])
+          .oneTime()
+          .resize()
+      )
+    );
     if (userRole >= 3) {
       await this.userHelper(context);
     }

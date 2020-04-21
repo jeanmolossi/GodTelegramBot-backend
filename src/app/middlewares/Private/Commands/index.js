@@ -87,8 +87,12 @@ class Commands extends Composer {
   }
 
   async useModeratorCommands() {
-    const { level } = this.payload;
-    return !!(level >= this.levelRole.Moderator && level < this.levelRole.Dev);
+    const { level, hasModerationLevel } = this.payload;
+
+    return !!(
+      (level >= this.levelRole.Moderator && level < this.levelRole.Dev) ||
+      hasModerationLevel
+    );
   }
 
   async useAdministratorCommands() {
@@ -107,6 +111,10 @@ class Commands extends Composer {
     const { level } = await UserLevelUtil.run({
       userTgId: context.message.from.id,
     });
+    const hasModerationLevel = await UserLevelUtil.hasModerationLevel({
+      userTgId: context.message.from.id,
+    });
+    this.payload.hasModerationLevel = hasModerationLevel;
     this.payload.level = level;
     return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);
   }

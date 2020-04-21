@@ -1,11 +1,11 @@
 import Composer from 'telegraf/composer';
 
-import NotificationsCommand from './NotificationsCommand';
+import NotificationCommand from './NotificationCommand';
 
 class ModeratorCommands extends Composer {
   constructor() {
     super();
-    this.use(NotificationsCommand);
+    this.use(NotificationCommand);
   }
 }
 

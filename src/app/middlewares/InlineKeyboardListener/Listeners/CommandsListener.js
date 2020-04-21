@@ -31,7 +31,11 @@ class CommandsListener extends Composer {
     try {
       await context.answerCbQuery();
       await context.editMessageText(
-        `Você pode usar somente alguns comandos. Que são:`,
+        `Você pode usar somente alguns comandos.\n` +
+          `Porém, dependendo de sua posição no grupo serão habilitados alguns ` +
+          `comandos a mais para você usar. Para saber quais são, use /help no ` +
+          `grupo ao qual deseja saber.\n\nEsses comandos só ficarão habilitados ` +
+          `nos grupos específicos em que você tenha autorização para utilizá-los`,
         Extra.markup((m) =>
           m.inlineKeyboard([
             [m.callbackButton('/start', 'myCommands')],
