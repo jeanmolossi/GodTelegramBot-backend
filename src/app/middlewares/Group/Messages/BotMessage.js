@@ -13,7 +13,22 @@ class BotMessage extends Composer {
   async messageFilter(context, next) {
     if (!context.message) return next();
     const { chat, from } = context.message;
-    if (!(await RuleMethods.hasThatRule(chat.id, 'DENY_BOT'))) {
+    let hasRule = false;
+
+    const issetBotMsghasThatRule = context.appState.utils.getState(
+      'BotMsghasThatRule'
+    );
+
+    if (issetBotMsghasThatRule !== undefined) {
+      hasRule = issetBotMsghasThatRule;
+    } else {
+      hasRule = await RuleMethods.hasThatRule(chat.id, 'DENY_BOT');
+      context.appState.utils.addToState({
+        BotMsghasThatRule: hasRule,
+      });
+    }
+
+    if (!hasRule) {
       return next();
     }
 

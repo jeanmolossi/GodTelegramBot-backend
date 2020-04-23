@@ -108,12 +108,30 @@ class Commands extends Composer {
   }
 
   async useFounderCommands(context, next) {
+    const issetUserLevelUtil = context.appState.utils.getState('UserLevelUtil');
+    const issethasModerationLevel = context.appState.utils.getState(
+      'hasModerationLevel'
+    );
+    if (issetUserLevelUtil && issethasModerationLevel) {
+      const level = issetUserLevelUtil;
+      this.payload.level = level;
+      this.payload.hasModerationLevel = issethasModerationLevel;
+
+      return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);
+    }
+
     const { level } = await UserLevelUtil.run({
       userTgId: context.message.from.id,
     });
     const hasModerationLevel = await UserLevelUtil.hasModerationLevel({
       userTgId: context.message.from.id,
     });
+
+    context.appState.utils.addToState({
+      UserLevelUtil: level,
+      hasModerationLevel,
+    });
+
     this.payload.hasModerationLevel = hasModerationLevel;
     this.payload.level = level;
     return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);

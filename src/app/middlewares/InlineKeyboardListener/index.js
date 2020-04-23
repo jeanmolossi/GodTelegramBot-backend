@@ -66,7 +66,16 @@ class InlineKeyboardListener extends Composer {
 
   async userLevel(context, next) {
     try {
+      const issetUserLevelByGroupService = await context.appState.utils.getState(
+        'UserLevelByGroupService'
+      );
+      if (issetUserLevelByGroupService !== undefined) {
+        return issetUserLevelByGroupService;
+      }
       const serviceRunner = await UserLevelByGroupService.run({ context });
+      context.appState.utils.addToState({
+        UserLevelByGroupService: serviceRunner,
+      });
       return serviceRunner;
     } catch (error) {
       return false;

@@ -19,6 +19,7 @@ class FullUserBuyCatalogUtil {
         },
       ],
     });
+
     return user;
   }
 }

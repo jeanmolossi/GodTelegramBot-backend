@@ -4,6 +4,7 @@ class UserLevelByGroupService {
   async run({ context }) {
     try {
       const { callback_query, message } = context.update;
+
       let allUser = null;
       if (callback_query !== undefined) {
         allUser = await FindLevelByGroupUtil.run({
@@ -21,6 +22,7 @@ class UserLevelByGroupService {
 
       const { Users } = allUser;
       const { userRole } = Users[0].UserGroup;
+
       if (userRole >= 6) {
         return true;
       }

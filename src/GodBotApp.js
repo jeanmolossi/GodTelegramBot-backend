@@ -1,6 +1,7 @@
 import Telegraf from 'telegraf';
 import Database from './database';
 
+import BotSession from './app/middlewares/BotSessionMiddleware';
 import Group from './app/middlewares/Group';
 import Private from './app/middlewares/Private';
 import InlineKeyboardListener from './app/middlewares/InlineKeyboardListener';
@@ -13,6 +14,7 @@ class GodBotController {
     // STARTS NEW BOT
     this.bot = new Telegraf(token, options);
     // BOT MIDDLEWARES BEFORE START POLLING
+    this.bot.use(BotSession);
     this.bot.use(InlineKeyboardListener);
     this.bot.use(Group);
     this.bot.use(Private);

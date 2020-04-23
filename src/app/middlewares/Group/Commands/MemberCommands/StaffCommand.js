@@ -10,7 +10,21 @@ class StartCommand extends Composer {
 
   async commandAction(context, next) {
     const { chat } = context.message;
-    const groupStaff = await GroupStaffUtil.run({ tgId: chat.id });
+
+    let groupStaff = null;
+    const issetGroupStaffUtil = context.appState.utils.getState(
+      'GroupStaffUtil'
+    );
+    if (issetGroupStaffUtil) {
+      groupStaff = issetGroupStaffUtil;
+      // console.log('GROUP STAFF FOUND RETURNS THIS');
+    } else {
+      groupStaff = await GroupStaffUtil.run({ tgId: chat.id });
+      context.appState.utils.addToState({
+        GroupStaffUtil: groupStaff,
+      });
+      // console.log('GROUP STAFF NOT FOUND SETTING THIS');
+    }
 
     const staff = groupStaff.map((userStaff) => {
       let role = 'Defaul User';

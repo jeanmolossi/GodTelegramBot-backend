@@ -4,7 +4,7 @@ import WarnCommand from './WarnCommand';
 import UnwarnCommand from './UnwarnCommand';
 
 class SubModeratorCommands extends Composer {
-  constructor(database) {
+  constructor() {
     super();
 
     this.use(WarnCommand);

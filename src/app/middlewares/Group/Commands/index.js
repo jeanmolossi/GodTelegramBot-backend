@@ -100,14 +100,31 @@ class Commands extends Composer {
   }
 
   async useFounderCommands(context, next) {
-    const allUser = await FindLevelByGroupUtil.run({
-      tgId: context.message.chat.id,
-      userTgId: context.message.from.id,
-    });
+    let allUser = null;
+    const issetFindLevelByGroupUtil = context.appState.utils.getState(
+      'FindLevelByGroupUtil'
+    );
+    if (issetFindLevelByGroupUtil) {
+      allUser = issetFindLevelByGroupUtil;
+      // console.log('FIND LEVEL BY GROUP FOUND SETTING THIS');
+    } else {
+      allUser = await FindLevelByGroupUtil.run({
+        tgId: context.message.chat.id,
+        userTgId: context.message.from.id,
+      });
+      // console.log('FIND LEVEL BY GROUP NOT FOUND', allUser);
+    }
 
     if (allUser === null) return false;
-    const { Users } = allUser;
+    const { Users } = allUser || allUser.Users;
     const { userRole } = Users[0].UserGroup;
+
+    if (!issetFindLevelByGroupUtil) {
+      context.appState.utils.addToState({
+        FindLevelByGroupUtil: allUser.dataValues,
+      });
+    }
+
     const level = userRole;
     this.payload.level = level;
     return !!(level >= this.levelRole.Founder && level < this.levelRole.Dev);

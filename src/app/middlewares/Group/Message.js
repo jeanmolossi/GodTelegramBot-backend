@@ -16,7 +16,6 @@ import LinkMessage from './Messages/LinkMessage';
 class Message extends Composer {
   constructor() {
     super();
-
     // MESSAGES TYPES
     this.use(SpamMessage);
     this.use(FloodMessage);
@@ -29,6 +28,10 @@ class Message extends Composer {
     // FILE && LINK MESSAGES RULES
     this.use(LinkMessage);
     // this.use(new FileMessage(database));
+  }
+
+  verifyContext(context, next) {
+    return next();
   }
 }
 

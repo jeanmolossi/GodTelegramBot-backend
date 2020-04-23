@@ -14,9 +14,18 @@ class LinkMessage extends Composer {
     if (!context.message) return next();
     const { chat, from } = context.message;
     let regexes = [];
+    let GroupRules = [];
+    const issetGroupRules = context.appState.utils.getState('GroupRules');
+    if (issetGroupRules !== undefined) {
+      GroupRules = issetGroupRules;
+    } else {
+      GroupRules = await RuleMethods.getGroupRules(chat.id);
+      context.appState.utils.addToState({
+        GroupRules,
+      });
+    }
     try {
-      regexes = (await RuleMethods.getGroupRules(chat.id))
-        .map((rule) => rule.type)
+      regexes = GroupRules.map((rule) => rule.type)
         .filter((rule) => rule.includes('DENY_LINK_'))
         .map((rule) => rule.replace('DENY_LINK_', ''))
         .map((regex) => new RegExp(regex, 'gmi'));

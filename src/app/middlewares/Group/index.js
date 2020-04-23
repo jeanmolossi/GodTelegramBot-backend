@@ -29,8 +29,17 @@ class Group extends Composer {
   }
 
   async applicableFilterUser(context) {
+    const issetUserLevelByGroupService = context.appState.utils.getState(
+      'UserLevelByGroupService'
+    );
+    if (issetUserLevelByGroupService !== undefined) {
+      return !issetUserLevelByGroupService;
+    }
     const utilRunner = await UserLevelByGroupService.run({
       context,
+    });
+    await context.appState.utils.addToState({
+      UserLevelByGroupService: utilRunner,
     });
     return utilRunner;
   }

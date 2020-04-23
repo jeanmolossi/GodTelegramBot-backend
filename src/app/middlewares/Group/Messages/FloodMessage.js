@@ -13,12 +13,25 @@ class FloodMessage extends Composer {
   }
 
   async messageFilter(context, next) {
-    console.log(this.floods);
+    // console.log(this.floods);
     if (!context.message) return next();
-    const hasRule = await RuleMethods.hasThatRule(
-      context.message.chat.id,
-      'DENY_FLOOD'
+    let hasRule = false;
+
+    const issetFloodhasThatRule = context.appState.utils.getState(
+      'FloodhasThatRule'
     );
+
+    if (issetFloodhasThatRule !== null && issetFloodhasThatRule !== undefined) {
+      hasRule = issetFloodhasThatRule;
+    } else {
+      hasRule = await RuleMethods.hasThatRule(
+        context.message.chat.id,
+        'DENY_FLOOD'
+      );
+      context.appState.utils.addToState({
+        FloodhasThatRule: hasRule,
+      });
+    }
     if (!hasRule) {
       return next();
     }
@@ -85,7 +98,7 @@ class FloodMessage extends Composer {
         context.message.from.id.toString() &&
       Date.now() - this.floods[context.message.from.id].date < 3000;
 
-    console.log(isFlood);
+    // console.log(isFlood);
     return isFlood;
   }
 }

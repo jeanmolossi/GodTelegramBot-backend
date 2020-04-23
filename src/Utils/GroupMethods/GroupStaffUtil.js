@@ -10,6 +10,7 @@ class GroupStaffUtil {
     const users = group.Users.filter(
       (user) => user && user.UserGroup.userRole >= 3
     );
+
     return users;
   }
 }

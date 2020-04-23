@@ -13,7 +13,19 @@ class BotForwardMessage extends Composer {
   async messageFilter(context, next) {
     if (!context.message) return next();
     const { chat, from } = context.message;
-    if (!(await RuleMethods.hasThatRule(chat.id, 'DENY_BOT_FORWARD'))) {
+    let hasRule = false;
+    const issetBotFwdhasThatRule = context.appState.utils.getState(
+      'BotFwdhasThatRule'
+    );
+    if (issetBotFwdhasThatRule !== undefined) {
+      hasRule = issetBotFwdhasThatRule;
+    } else {
+      hasRule = await RuleMethods.hasThatRule(chat.id, 'DENY_BOT_FORWARD');
+      context.appState.utils.addToState({
+        BotFwdhasThatRule: hasRule,
+      });
+    }
+    if (!hasRule) {
       return next();
     }
     if (

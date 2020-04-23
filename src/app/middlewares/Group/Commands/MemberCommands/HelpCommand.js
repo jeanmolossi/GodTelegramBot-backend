@@ -16,17 +16,40 @@ class HelpCommand extends Composer {
     let Users = null;
     const { chat, from } = context.message;
 
-    allUser = await FindLevelByGroupUtil.run({
-      tgId: chat.id,
-      userTgId: from.id,
-    });
+    const issetFindLevelByGroupUtil = context.appState.utils.getState(
+      'FindLevelByGroupUtil'
+    );
+
+    if (issetFindLevelByGroupUtil) {
+      allUser = issetFindLevelByGroupUtil;
+      console.log('issetFindLevelByGroupUtil FOUND! RETURNING THIS');
+    } else {
+      allUser = await FindLevelByGroupUtil.run({
+        tgId: chat.id,
+        userTgId: from.id,
+      });
+      context.appState.utils.addToState({
+        FindLevelByGroupUtil: allUser.dataValues,
+      });
+      console.log('FindLevelByGroupUtil IS NOT FOUND! SETTING THIS');
+    }
 
     if (allUser === null) {
-      Users = [
-        await SimpleFindUserByTgId.run({
-          userTgId: from.id,
-        }),
-      ];
+      const issetSimpleFindUserByTgId = context.appState.utils.getState(
+        'SimpleFindUserByTgId'
+      );
+      if (issetSimpleFindUserByTgId) {
+        Users = issetSimpleFindUserByTgId;
+      } else {
+        Users = [
+          await SimpleFindUserByTgId.run({
+            userTgId: from.id,
+          }),
+        ];
+        context.appState.utils.addToState({
+          SimpleFindUserByTgId: Users,
+        });
+      }
     } else {
       Users = allUser.Users;
     }

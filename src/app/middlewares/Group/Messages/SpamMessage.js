@@ -16,13 +16,25 @@ class SpamMessage extends Composer {
     try {
       if (!context.message) return next();
 
-      const hasRule = await RuleMethods.hasThatRule(
-        context.message.chat.id,
-        'DENY_SPAM'
+      let hasRule = false;
+      const issetSpamhasThatRule = context.appState.utils.getState(
+        'SpamhasThatRule'
       );
+      if (issetSpamhasThatRule !== null && issetSpamhasThatRule !== undefined) {
+        hasRule = issetSpamhasThatRule;
+      } else {
+        hasRule = await RuleMethods.hasThatRule(
+          context.message.chat.id,
+          'DENY_SPAM'
+        );
+        context.appState.utils.addToState({
+          SpamhasThatRule: hasRule,
+        });
+      }
       if (!hasRule) {
         return next();
       }
+
       let words = [];
       // console.log(context.message);
       if (!context.message.caption && context.message.text) {
@@ -32,7 +44,18 @@ class SpamMessage extends Composer {
         words = context.message.caption.split(' ');
       }
 
-      if (!(await SpamMethods.hasSpam(context.message.chat.id, words))) {
+      let hasSpam = false;
+      const issetHasSpam = context.appState.utils.getState('hasSpam');
+      if (issetHasSpam !== null && issetHasSpam !== undefined) {
+        hasSpam = issetHasSpam;
+      } else {
+        hasSpam = await SpamMethods.hasSpam(context.message.chat.id, words);
+        context.appState.utils.addToState({
+          hasSpam,
+        });
+      }
+
+      if (!hasSpam) {
         return next();
       }
 
