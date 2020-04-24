@@ -59,7 +59,7 @@ class GroupManagerController {
   }
 
   async incrementUser(chatId, context) {
-    console.log('INCREMENTING');
+    // console.log('INCREMENTING');
     let report = null;
     report = await GroupManager.findOne({
       where: {
@@ -83,7 +83,7 @@ class GroupManagerController {
   }
 
   async decrementUser(chatId, context) {
-    console.log('DECREMENTING');
+    // console.log('DECREMENTING');
     let report = null;
     report = await GroupManager.findOne({
       where: {
