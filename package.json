@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/index.js",
+    "dev:debug": "nodemon --inspect src/index.js",
     "build": "sucrase ./src -d ./dist --transforms imports",
     "start": "node dist/index.js"
   },

@@ -6,6 +6,7 @@ import groupsSubmenu from './groupsSubmenu';
 import mybuysSubmenu from './mybuysSubmenu';
 import myWarnsSubmenu from './myWarnsSubmenu';
 import faqAndHelpSubmenu from './faqAndHelpSubmenu';
+import apiAdjust from './apiAdjust';
 
 const startMenu = new TelegrafInlineMenu(
   context =>
@@ -19,6 +20,7 @@ startMenu.submenu('Meus comandos', 'myCommands', commandsSubmenu);
 startMenu.submenu('Meus grupos', 'myGroups', groupsSubmenu);
 startMenu.submenu('Minhas compras', 'mybuyssub', mybuysSubmenu);
 startMenu.submenu('Meus alertas', 'mywarnssub', myWarnsSubmenu);
+startMenu.submenu('Configurações de API', 'apicfg', apiAdjust);
 startMenu.submenu('Perguntas frequentes e Ajuda', 'faqHelp', faqAndHelpSubmenu);
 
 export default startMenu.init({

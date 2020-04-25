@@ -68,11 +68,11 @@ class MenuInitializer extends Composer {
 
   logHandler(ctx, next) {
     if (ctx.callbackQuery) {
-      // console.log(
-      //   'Callback',
-      //   ctx.callbackQuery.data.length,
-      //   ctx.callbackQuery.data
-      // );
+      console.log(
+        'Callback',
+        ctx.callbackQuery.data.length,
+        ctx.callbackQuery.data
+      );
     }
     return next();
   }

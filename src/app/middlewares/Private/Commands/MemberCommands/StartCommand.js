@@ -5,7 +5,7 @@ class StartCommand extends Composer {
   constructor() {
     super();
 
-    this.command('start', this.commandAction.bind(this));
+    // this.command('start', this.commandAction.bind(this));
     // this.command('help', this.commandAction.bind(this));
     return this;
   }
