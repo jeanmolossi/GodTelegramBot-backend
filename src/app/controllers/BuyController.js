@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import * as yup from 'yup';
 
 import Product from '../models/Product';
@@ -67,7 +68,7 @@ class BuyController {
     if (!product) return res.status(400).json({ error: 'Product not found' });
 
     const transactionExists = await Buy.findOne({
-      where: { sellCode: transactionCode },
+      where: { sellCode: transactionCode, UserId: { [Op.ne]: null } },
     });
     if (transactionExists)
       return res.status(400).json({ error: 'Transaction is already in use' });

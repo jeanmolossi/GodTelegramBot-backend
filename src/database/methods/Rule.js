@@ -79,19 +79,11 @@ class RuleMethods {
       'DENY_LINK', // 6
     ];
     if (ruleStats === 'on') {
-      const addRule = await this.addRuleToGroup.call(
-        this,
-        chatId,
-        ruleType[ruleId]
-      );
+      await this.addRuleToGroup.call(this, chatId, ruleType[ruleId]);
       // console.log(addRule);
       return true;
     }
-    const removeRule = await this.removeGroupRule.call(
-      this,
-      chatId,
-      ruleType[ruleId]
-    );
+    await this.removeGroupRule.call(this, chatId, ruleType[ruleId]);
     // console.log(removeRule);
     return true;
   }

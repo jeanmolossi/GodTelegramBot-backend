@@ -10,7 +10,7 @@ import PromoteCommand from './PromoteCommand';
 class AdministratorCommands extends Composer {
   constructor() {
     super();
-    this.use(SettingsCommand);
+    // this.use(SettingsCommand);
     this.use(ReloadCommand);
     this.use(BanCommand);
     this.use(UnbanCommand);

@@ -28,7 +28,9 @@ class Group extends Composer {
     return false;
   }
 
-  async applicableFilterUser(context) {
+  async applicableFilterUser(context, next) {
+    if (!(await this.isGroup.call(this, context, next))) return false;
+
     const issetUserLevelByGroupService = context.appState.utils.getState(
       'UserLevelByGroupService'
     );

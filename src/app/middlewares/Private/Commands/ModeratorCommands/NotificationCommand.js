@@ -47,7 +47,7 @@ class NotificationCommand extends Composer {
 
     let notificationMarker = 0;
     const buttons = [];
-    const notificationsList = notifications.map((notification) => {
+    const notificationsList = notifications.map(notification => {
       notificationMarker += 1;
       const notificationUrl = `${process.env.PANEL_URL}/${notification.id}/static/notification/read`;
       buttons.push([
@@ -65,7 +65,7 @@ class NotificationCommand extends Composer {
     await context.replyWithMarkdown(
       `Suas notificações *Não lidas* dos últimos *3 dias*\n\n` +
         `${notificationsList.join('\n\n\n')}`,
-      Extra.markup((m) =>
+      Extra.markup(m =>
         m.inlineKeyboard(
           buttons !== null
             ? buttons

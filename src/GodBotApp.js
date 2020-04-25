@@ -4,7 +4,7 @@ import Database from './database';
 import BotSession from './app/middlewares/BotSessionMiddleware';
 import Group from './app/middlewares/Group';
 import Private from './app/middlewares/Private';
-import InlineKeyboardListener from './app/middlewares/InlineKeyboardListener';
+// import InlineKeyboardListener from './app/middlewares/InlineKeyboardListener';
 import TelegrafInlineMenus from './app/middlewares/TelegrafInlineKb';
 
 class GodBotController {

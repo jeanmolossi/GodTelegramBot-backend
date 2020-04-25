@@ -8,7 +8,16 @@ import SimpleFindUserByTgId from '../../../../../Utils/UserMethods/SimpleFindUse
 class HelpCommand extends Composer {
   constructor() {
     super();
-    this.command('help', this.commandAction.bind(this));
+    this.command('help', this.answerForHelp.bind(this));
+  }
+
+  async answerForHelp(context, next) {
+    await context.reply(`Vem no PV ;)`);
+    await context.telegram.sendMessage(
+      context.message.from.id,
+      `Utilize aqui o /help que te conto mais... ;D`
+    );
+    return next();
   }
 
   async commandAction(context, next) {
@@ -60,7 +69,7 @@ class HelpCommand extends Composer {
     const { userRole } = Users[0].UserGroup;
     await context.reply(
       `Vem de PV ;)`,
-      Extra.markup((m) =>
+      Extra.markup(m =>
         m
           .keyboard([['/help', '/staff']])
           .oneTime()

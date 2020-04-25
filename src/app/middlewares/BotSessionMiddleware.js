@@ -54,10 +54,10 @@ class SessionMiddleware extends Composer {
         return undefined;
       },
     };
-    console.log(
-      context.appState,
-      'BOT SESSION MIDDLEWARE APP STATE >> addUtils'
-    );
+    // console.log(
+    //   context.appState,
+    //   'BOT SESSION MIDDLEWARE APP STATE >> addUtils'
+    // );
     return next();
   }
 }
