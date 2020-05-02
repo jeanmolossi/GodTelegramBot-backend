@@ -1,6 +1,6 @@
 import monetizzeapi from '../services/monetizzeapi';
 
-export const getToken = async (consumerKey) => {
+export const getToken = async consumerKey => {
   console.log('Getting Token');
   monetizzeapi.defaults.headers = {
     X_CONSUMER_KEY: consumerKey,

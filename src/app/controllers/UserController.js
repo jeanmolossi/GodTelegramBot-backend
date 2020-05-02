@@ -43,12 +43,11 @@ class UserController {
     const schemaValidation = yup.object().shape({
       name: yup.string(),
       email: yup.string().email(),
-      oldPassword: yup.string().min(6),
+      oldPassword: yup.string(),
       password: yup
         .string()
-        .min(6)
         .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
+          oldPassword ? field.required().min(6) : field
         ),
       confirmPassword: yup
         .string()
@@ -80,25 +79,18 @@ class UserController {
 
   async delete(req, res) {
     const schemaValidation = yup.object().shape({
-      oldPassword: yup.string().min(6).required(),
-      password: yup
-        .string()
-        .min(6)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
-        ),
-      confirmPassword: yup
-        .string()
-        .when('password', (password, field) =>
-          password ? field.required().oneOf([yup.ref('password')]) : field
-        ),
-      tgId: yup.string(),
+      oldPassword: yup.string().required(),
     });
 
     if (!(await schemaValidation.isValid(req.body))) {
       return res.status(400).json({ error: 'Validations fail' });
     }
+    const { oldPassword } = req.body;
     const user = await User.findByPk(req.userId);
+
+    if (!(await user.checkPassword(oldPassword))) {
+      return res.status(401).json({ error: 'You cannot deactivate account!' });
+    }
     await user.update({ canLogin: false });
     return res.status(200).json();
   }

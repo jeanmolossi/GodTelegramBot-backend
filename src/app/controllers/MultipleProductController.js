@@ -1,5 +1,6 @@
 import Product from '../models/Product';
 import User from '../models/User';
+import Group from '../models/Group';
 
 class MultipleProductController {
   async index(req, res) {
@@ -10,10 +11,18 @@ class MultipleProductController {
           model: Product,
           where: { productActive: true },
           attributes: [
+            'id',
             'productName',
             'productId',
             'productActive',
             'productMonetizze',
+            'createdAt',
+          ],
+          order: [['createdAt', 'DESC']],
+          include: [
+            {
+              model: Group,
+            },
           ],
         },
       ],

@@ -26,7 +26,7 @@ class SessionController {
     if (!(await user.checkPassword(password)))
       return res.status(401).json({ error: 'Invalid password' });
 
-    const { id, name, tgId } = user;
+    const { id, name, tgId, canLogin } = user;
 
     return res.json({
       user: {
@@ -34,6 +34,7 @@ class SessionController {
         name,
         email,
         tgId,
+        canLogin,
       },
       token: jwt.sign({ id, tgId }, process.env.SECRET_MD5, {
         expiresIn: '7d',

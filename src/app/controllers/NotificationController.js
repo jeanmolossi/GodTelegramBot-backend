@@ -7,6 +7,7 @@ class NotificationController {
   async index(req, res) {
     const notifications = await Notification.findAll({
       where: { toId: req.userId },
+      order: [['createdAt', 'DESC']],
     });
     if (!notifications || notifications.length <= 0)
       return res.status(200).json({ message: 'You do not have notifications' });
