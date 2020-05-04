@@ -63,7 +63,8 @@ class SessionController {
       ],
     });
 
-    if (!(userConfig && userConfig.Config)) return res.json([]);
+    if (!(userConfig && userConfig.Config))
+      return res.json({ consumerKey: null });
 
     return res.json(userConfig);
   }

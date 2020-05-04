@@ -67,7 +67,7 @@ class ConfigController {
       ],
     });
     if (!(user && user.Config))
-      return res.json({ error: 'User has not config' });
+      return res.status(400).json({ error: 'User has not config' });
 
     const { consumerKey } = req.body;
     const configToUpdate = await Config.findByPk(user.ConfigId);
