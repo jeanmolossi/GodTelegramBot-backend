@@ -63,8 +63,7 @@ class SessionController {
       ],
     });
 
-    // if (!(userConfig && userConfig.Config))
-    //   return res.status(401).json({ error: 'User has not config' });
+    if (!(userConfig && userConfig.Config)) return res.json([]);
 
     return res.json(userConfig);
   }
